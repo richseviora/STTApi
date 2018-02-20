@@ -13,8 +13,8 @@ export default class CONFIG {
 
 	// default client_id of the Steam Windows version of STT
 	static readonly CLIENT_ID: string = "4fc852d7-d602-476a-a292-d243022a475d";
-	static readonly CLIENT_API_VERSION: number = 8;
-	static readonly CLIENT_VERSION: string = "3.1.2";
+	static readonly CLIENT_API_VERSION: number = 9;
+	static readonly CLIENT_VERSION: string = "4.0.0";
 	static readonly CLIENT_PLATFORM: string = "webgl";
 
 	// feedback form endpoint URL
