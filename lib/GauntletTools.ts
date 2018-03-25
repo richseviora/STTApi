@@ -44,16 +44,20 @@ export function playContest(gauntlet_id: number, crew_id: number, opponent_id: n
 	}).then((data: any) => {
 		let currentGauntlet = null;
 		let contest = null;
+		let rewards = null;
 		data.forEach((item: any) => {
 			if (item.character && item.character.gauntlets) {
 				currentGauntlet = item.character.gauntlets[0];
 			} else if (item.contest) {
 				contest = item.contest;
+			} else if (item.rewards) {
+				rewards = item.rewards;
 			}
+
 		});
 
 		if (currentGauntlet && contest) {
-			return Promise.resolve({ gauntlet: currentGauntlet, lastResult: contest });
+			return Promise.resolve({ gauntlet: currentGauntlet, lastResult: contest, rewards: rewards });
 		} else {
 			return Promise.reject("Invalid data for gauntlet!");
 		}
