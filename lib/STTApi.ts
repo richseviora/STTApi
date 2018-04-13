@@ -475,6 +475,22 @@ export class STTApiClass {
 		});
 	}
 
+	startVoyage(voyageSymbol: string, shipId: number, shipName: string, selectedCrewIds: Array<number>): Promise<void> {
+		return this.executePostRequest("voyage/start", {
+			voyage_symbol: voyageSymbol,
+			ship_id: shipId,
+			crew_ids_string: selectedCrewIds.join(','),
+			ship_name: shipName
+		 }).then((data: any) => {
+			if (data) {
+				//console.info("Started voyage");
+				return Promise.resolve();
+			} else {
+				return Promise.reject("Invalid data for voyage!");
+			}
+		});
+	}
+
 	submitUserFeedback(feedback: any): Promise<any> {
 		return this._net.postjson(CONFIG.URL_USERFEEDBACK, feedback);
 	}
