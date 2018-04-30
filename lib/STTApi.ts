@@ -481,12 +481,30 @@ export class STTApiClass {
 			ship_id: shipId,
 			crew_ids_string: selectedCrewIds.join(','),
 			ship_name: shipName
-		 }).then((data: any) => {
+		}).then((data: any) => {
 			if (data) {
 				//console.info("Started voyage");
 				return Promise.resolve();
 			} else {
 				return Promise.reject("Invalid data for voyage!");
+			}
+		});
+	}
+
+	enterGauntlet(gauntletId: number, crewIds: Array<number>): Promise<void> {
+		return this.executePostRequest("gauntlet/enter_crew_contest_gauntlet", {
+			gauntlet_id: gauntletId,
+			crew1_id:crewIds[0],
+			crew2_id:crewIds[1],
+			crew3_id:crewIds[2],
+			crew4_id:crewIds[3],
+			crew5_id:crewIds[4]
+		}).then((data: any) => {
+			if (data) {
+				//console.info("Entered gauntlet");
+				return Promise.resolve();
+			} else {
+				return Promise.reject("Invalid data for gauntlet!");
 			}
 		});
 	}
