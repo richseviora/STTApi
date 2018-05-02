@@ -27,8 +27,8 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "ab-parser": "file:AssetParser",
     "dexie": "latest",
-    "ab-parser": "file:./AssetParser",
     "url-search-params-polyfill": "latest"
   }
 }
