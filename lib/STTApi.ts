@@ -419,6 +419,16 @@ export class STTApiClass {
 		});
 	}
 
+	inspectPlayer(playerId: string): Promise<any> {
+		return this.executeGetRequest("player/inspect/" + playerId).then((data: any) => {
+			if (data.player) {
+				return Promise.resolve(data.player);
+			} else {
+				return Promise.reject("Invalid data for player!");
+			}
+		});
+	}
+
 	loadVoyage(voyageId: number, newOnly: boolean = true): Promise<any> {
 		return this.executePostRequest("voyage/refresh", { voyage_status_id: voyageId, new_only: newOnly }).then((data: any) => {
 			if (data) {
