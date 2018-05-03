@@ -5,7 +5,7 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "build": "tsc",
     "postbuild": "node_modules/.bin/copyfiles -f lib/*.d.ts dist",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/IAmPicard/STTApi#readme",
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/node": "^10.0.3",
     "copyfiles": "latest",
     "typescript": "latest"
   },
