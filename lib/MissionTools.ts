@@ -62,11 +62,22 @@ export interface IMissionData {
 }
 
 export function loadMissionData(accepted_missions: any, dispute_histories: any): Promise<IMissionData[]> {
-	var mission_ids = accepted_missions.map((mission: any) => mission.id);
+	var mission_ids: any[] = [];
+	
+	accepted_missions.forEach((mission: any) => {
+		if (mission.symbol !== 'mission_npev2') {
+			// Ignore the tutorial episode
+			mission_ids.push(mission.id);
+		}
+	});
 
 	// Add all the episodes' missions (if not cadet)
 	if (dispute_histories) {
 		dispute_histories.forEach((dispute: any) => {
+			if (dispute.symbol === 'dispute_logic_under_fire_NPE') {
+				return; // Ignore the tutorial dispute
+			}
+
 			mission_ids = mission_ids.concat(dispute.mission_ids);
 		});
 	}
@@ -76,6 +87,10 @@ export function loadMissionData(accepted_missions: any, dispute_histories: any):
 		let questPromises: Promise<void>[] = [];
 
 		data.character.accepted_missions.forEach((mission: any) => {
+			if (mission.symbol === 'mission_npev2')  {
+				return; // Ignore the tutorial episode
+			}
+
 			if (mission.episode_title != null) {
 				let missionData: IMissionData = {
 					id: mission.id,
@@ -105,6 +120,10 @@ export function loadMissionData(accepted_missions: any, dispute_histories: any):
 				// Could be one of the episodes
 				if (dispute_histories) {
 					dispute_histories.forEach((dispute: any) => {
+						if (dispute.symbol === 'dispute_logic_under_fire_NPE') {
+							return; // Ignore the tutorial dispute
+						}
+
 						if (dispute.mission_ids.includes(mission.id)) {
 							if (!dispute.quests)
 								dispute.quests = [];
@@ -131,6 +150,10 @@ export function loadMissionData(accepted_missions: any, dispute_histories: any):
 			if (dispute_histories) {
 				// Pretend the episodes (disputes) are missions too, to get them to show up
 				dispute_histories.forEach((dispute: any) => {
+					if (dispute.symbol === 'dispute_logic_under_fire_NPE') {
+						return; // Ignore the tutorial dispute
+					}
+
 					let missionData: IMissionData = {
 						id: dispute.mission_ids[0],
 						episode_title: 'Episode ' + dispute.episode + ' : ' + dispute.name,

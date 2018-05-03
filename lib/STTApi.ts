@@ -463,6 +463,24 @@ export class STTApiClass {
 		});
 	}
 
+	completeVoyage(voyageId: number): Promise<void> {
+		return this.executePostRequest("voyage/complete", { voyage_status_id: voyageId }).then((data: any) => {
+			if (data) {
+				//console.info("Recalled voyage");
+				return this.executePostRequest("voyage/claim", { voyage_status_id: voyageId }).then((data: any) => {
+					if (data) {
+						//console.info("Recalled voyage");
+						return Promise.resolve();
+					} else {
+						return Promise.reject("Invalid data for voyage!");
+					}
+				});
+			} else {
+				return Promise.reject("Invalid data for voyage!");
+			}
+		});
+	}
+
 	reviveVoyage(voyageId: number): Promise<void> {
 		return this.executePostRequest("voyage/revive", { voyage_status_id: voyageId }).then((data: any) => {
 			if (data) {
@@ -494,6 +512,13 @@ export class STTApiClass {
 		}).then((data: any) => {
 			if (data) {
 				//console.info("Started voyage");
+
+				data.forEach((action: any) => {
+					if (action.character && action.character.voyage) {
+						this._playerData.player.character.voyage = action.character.voyage;
+					}
+				});
+
 				return Promise.resolve();
 			} else {
 				return Promise.reject("Invalid data for voyage!");
