@@ -64,6 +64,25 @@ export function playContest(gauntlet_id: number, crew_id: number, opponent_id: n
 	});
 }
 
+export function enterGauntlet(gauntletId: number, crewIds: Array<number>): Promise<void> {
+	return STTApi.executePostRequest("gauntlet/enter_crew_contest_gauntlet", {
+		gauntlet_id: gauntletId,
+		crew1_id:crewIds[0],
+		crew2_id:crewIds[1],
+		crew3_id:crewIds[2],
+		crew4_id:crewIds[3],
+		crew5_id:crewIds[4]
+	}).then((data: any) => {
+		if (data) {
+			//console.info("Entered gauntlet");
+			//TODO: parse data
+			return Promise.resolve();
+		} else {
+			return Promise.reject("Invalid data for gauntlet!");
+		}
+	});
+}
+
 export interface ICrewOdd {
     archetype_symbol: string;
     crew_id: number;

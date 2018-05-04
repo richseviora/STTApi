@@ -29,21 +29,21 @@ import CONFIG from "./CONFIG";
 export class STTApiClass {
 	private _accessToken: string | undefined;
 	private _net: NetworkInterface;
-	private _crewAvatars: any;
-	private _serverConfig: any;
+	public crewAvatars: any;
+	public serverConfig: any;
 	private _playerData: any;
 	private _platformConfig: any;
-	private _shipSchematics: any;
+	public shipSchematics: any;
 	private _starbaseData: any;
-	private _fleetData: any;
+	public fleetData: any;
 	private _fleetMemberInfo: any;
-	private _roster: any;
-	private _ships: any;
-	private _missions: any;
-	private _missionSuccess: IChallengeSuccess[];
-	private _minimalComplement?: MinimalComplement;
+	public roster: any;
+	public ships: any;
+	public missions: any;
+	public missionSuccess: IChallengeSuccess[];
+	public minimalComplement?: MinimalComplement;
 	private _cache: DexieCache;
-	private _imageProvider : ImageProvider;
+	public imageProvider : ImageProvider;
 
 	constructor() {
 		this.refreshEverything(true);
@@ -55,19 +55,19 @@ export class STTApiClass {
 	}
 
 	refreshEverything(logout: boolean) {
-		this._crewAvatars = null;
-		this._serverConfig = null;
+		this.crewAvatars = null;
+		this.serverConfig = null;
 		this._playerData = null;
 		this._platformConfig = null;
-		this._shipSchematics = null;
+		this.shipSchematics = null;
 		this._starbaseData = null;
-		this._fleetData = null;
+		this.fleetData = null;
 		this._fleetMemberInfo = null;
-		this._roster = null;
-		this._ships = null;
-		this._missions = null;
-		this._missionSuccess = [];
-		this._minimalComplement = undefined;
+		this.roster = null;
+		this.ships = null;
+		this.missions = null;
+		this.missionSuccess = [];
+		this.minimalComplement = undefined;
 
 		if (logout) {
 			this._accessToken = undefined;
@@ -76,56 +76,15 @@ export class STTApiClass {
 
 	setImageProvider(useAssets: boolean, imageCache: ImageCache|undefined) {
 		if (useAssets) {
-			this._imageProvider = new AssetImageProvider(imageCache);
+			this.imageProvider = new AssetImageProvider(imageCache);
 		}
 		else {
-			this._imageProvider = new WikiImageProvider();
+			this.imageProvider = new WikiImageProvider();
 		}
-	}
-
-	get roster(): any {
-		return this._roster;
-	}
-
-	get ships(): any {
-		return this._ships;
-	}
-
-	get missions(): any {
-		return this._missions;
-	}
-
-	get missionSuccess(): any {
-		return this._missionSuccess;
-	}
-
-	get minimalComplement(): MinimalComplement|undefined {
-		return this._minimalComplement;
-	}
-
-	// TODO: these setters should only be accessible form LoginSequence - perhaps make that a member of STTApi and pass in constructor
-	set roster(value: any) {
-		this._roster = value;
-	}
-	set ships(value: any) {
-		this._ships = value;
-	}
-	set missions(value: any) {
-		this._missions = value;
-	}
-	set missionSuccess(value: any) {
-		this._missionSuccess = value;
-	}
-	set minimalComplement(value: MinimalComplement|undefined) {
-		this._minimalComplement = value;
 	}
 
 	get networkHelper(): NetworkInterface {
 		return this._net;
-	}
-
-	get imageProvider(): ImageProvider {
-		return this._imageProvider;
 	}
 
 	get quests(): Dexie.Table<QuestsTable, number> {
@@ -144,10 +103,6 @@ export class STTApiClass {
 		return this._cache.config;
 	}
 
-	get accessToken(): string | undefined {
-		return this._accessToken;
-	}
-
 	get loggedIn(): boolean {
 		return this._accessToken != null;
 	}
@@ -156,20 +111,8 @@ export class STTApiClass {
 		return this._playerData.player;
 	}
 
-	get crewAvatars(): any {
-		return this._crewAvatars;
-	}
-
 	get itemArchetypeCache(): any {
 		return this._playerData.item_archetype_cache;
-	}
-
-	get shipSchematics(): any {
-		return this._shipSchematics;
-	}
-
-	get fleetData(): any {
-		return this._fleetData;
 	}
 
 	get fleetMembers(): any {
@@ -184,10 +127,6 @@ export class STTApiClass {
 		return this._starbaseData[0].character.starbase_rooms;
 	}
 
-	get serverConfig(): any {
-		return this._serverConfig;
-	}
-
 	getTraitName(trait: string): string {
 		return this._platformConfig.config.trait_names[trait] ? this._platformConfig.config.trait_names[trait] : trait;
 	}
@@ -197,11 +136,11 @@ export class STTApiClass {
 	}
 
 	getCrewAvatarById(id: number): any {
-		return this._crewAvatars.find((avatar: any) => avatar.id === id);
+		return this.crewAvatars.find((avatar: any) => avatar.id === id);
 	}
 
 	getCrewAvatarBySymbol(symbol: string): any {
-		return this._crewAvatars.find((avatar: any) => avatar.symbol === symbol);
+		return this.crewAvatars.find((avatar: any) => avatar.symbol === symbol);
 	}
 
 	login(username: string, password: string, autoLogin: boolean): Promise<any> {
@@ -307,7 +246,7 @@ export class STTApiClass {
 			client_version:CONFIG.CLIENT_VERSION,
 			platform_folder:CONFIG.CLIENT_PLATFORM
 		}).then((data: any) => {
-			this._serverConfig = data;
+			this.serverConfig = data;
 			console.info("Loaded server config");
 			return Promise.resolve();
 		});
@@ -316,7 +255,7 @@ export class STTApiClass {
 	loadCrewArchetypes(): Promise<any> {
 		return this.executeGetRequest("character/get_avatar_crew_archetypes").then((data: any) => {
 			if (data.crew_avatars) {
-				this._crewAvatars = data.crew_avatars;
+				this.crewAvatars = data.crew_avatars;
 				console.info("Loaded " + data.crew_avatars.length +" crew avatars");
 				return Promise.resolve();
 			} else {
@@ -362,7 +301,7 @@ export class STTApiClass {
 	loadShipSchematics(): Promise<any> {
 		return this.executeGetRequest("ship_schematic").then((data: any) => {
 			if (data.schematics) {
-				this._shipSchematics = data.schematics;
+				this.shipSchematics = data.schematics;
 				console.info("Loaded " + data.schematics.length + " ship schematics");
 
 				return Promise.resolve();
@@ -398,7 +337,7 @@ export class STTApiClass {
 	loadFleetData(guildId: string): Promise<any> {
 		return this.executeGetRequest("fleet/" + guildId).then((data: any) => {
 			if (data.fleet) {
-				this._fleetData = data.fleet;
+				this.fleetData = data.fleet;
 				console.info("Loaded fleet data");
 				return Promise.resolve();
 			} else {
@@ -427,125 +366,6 @@ export class STTApiClass {
 				return Promise.reject("Invalid data for player!");
 			}
 		});
-	}
-
-	loadVoyage(voyageId: number, newOnly: boolean = true): Promise<any> {
-		return this.executePostRequest("voyage/refresh", { voyage_status_id: voyageId, new_only: newOnly }).then((data: any) => {
-			if (data) {
-				let voyageNarrative: any[] = [];
-
-				data.forEach((action: any) => {
-					if (action.character) {
-						// TODO: if DB adds support for more than one voyage at a time this hack won't work
-						this._playerData.player.character.voyage[0] = mergeDeep(this._playerData.player.character.voyage[0], action.character.voyage[0]);
-					}
-					else if (action.voyage_narrative) {
-						voyageNarrative = action.voyage_narrative;
-					}
-				});
-
-				//console.info("Loaded voyage info");
-				return Promise.resolve(voyageNarrative);
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	recallVoyage(voyageId: number): Promise<void> {
-		return this.executePostRequest("voyage/recall", { voyage_status_id: voyageId }).then((data: any) => {
-			if (data) {
-				//console.info("Recalled voyage");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	completeVoyage(voyageId: number): Promise<void> {
-		return this.executePostRequest("voyage/complete", { voyage_status_id: voyageId }).then((data: any) => {
-			if (data) {
-				//console.info("Recalled voyage");
-				return this.executePostRequest("voyage/claim", { voyage_status_id: voyageId }).then((data: any) => {
-					if (data) {
-						//console.info("Recalled voyage");
-						return Promise.resolve();
-					} else {
-						return Promise.reject("Invalid data for voyage!");
-					}
-				});
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	reviveVoyage(voyageId: number): Promise<void> {
-		return this.executePostRequest("voyage/revive", { voyage_status_id: voyageId }).then((data: any) => {
-			if (data) {
-				//console.info("Revived voyage");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	resolveDilemma(voyageId: number, dilemmaId: number, index: number): Promise<void> {
-		return this.executePostRequest("voyage/resolve_dilemma", { voyage_status_id: voyageId, dilemma_id: dilemmaId, resolution_index: index }).then((data: any) => {
-			if (data) {
-				//console.info("Resolved dilemma");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	startVoyage(voyageSymbol: string, shipId: number, shipName: string, selectedCrewIds: Array<number>): Promise<void> {
-		return this.executePostRequest("voyage/start", {
-			voyage_symbol: voyageSymbol,
-			ship_id: shipId,
-			crew_ids_string: selectedCrewIds.join(','),
-			ship_name: shipName
-		}).then((data: any) => {
-			if (data) {
-				//console.info("Started voyage");
-
-				data.forEach((action: any) => {
-					if (action.character && action.character.voyage) {
-						this._playerData.player.character.voyage = action.character.voyage;
-					}
-				});
-
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for voyage!");
-			}
-		});
-	}
-
-	enterGauntlet(gauntletId: number, crewIds: Array<number>): Promise<void> {
-		return this.executePostRequest("gauntlet/enter_crew_contest_gauntlet", {
-			gauntlet_id: gauntletId,
-			crew1_id:crewIds[0],
-			crew2_id:crewIds[1],
-			crew3_id:crewIds[2],
-			crew4_id:crewIds[3],
-			crew5_id:crewIds[4]
-		}).then((data: any) => {
-			if (data) {
-				//console.info("Entered gauntlet");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for gauntlet!");
-			}
-		});
-	}
-
-	submitUserFeedback(feedback: any): Promise<any> {
-		return this._net.postjson(CONFIG.URL_USERFEEDBACK, feedback);
 	}
 
 	getGithubReleases(): Promise<any> {

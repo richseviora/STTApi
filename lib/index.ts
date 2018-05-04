@@ -2,7 +2,7 @@ export { STTApiClass } from "./STTApi";
 export { mergeDeep } from './ObjectMerge';
 export { loginSequence } from './LoginSequence';
 export { loadFullTree } from './EquipmentTools';
-export { bestVoyageShip } from './VoyageTools';
+export { bestVoyageShip, loadVoyage, startVoyage } from './VoyageTools';
 export { loadGauntlet, gauntletCrewSelection, gauntletRoundOdds, payToGetNewOpponents, playContest } from './GauntletTools';
 export { ImageCache } from './ImageProvider';
 import CONFIG from "./CONFIG";

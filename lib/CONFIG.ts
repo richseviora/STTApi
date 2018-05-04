@@ -17,9 +17,6 @@ export default class CONFIG {
 	static readonly CLIENT_VERSION: string = "4.0.3";
 	static readonly CLIENT_PLATFORM: string = "webgl";
 
-	// feedback form endpoint URL
-	static readonly URL_USERFEEDBACK: string = "https://prod-23.westus.logic.azure.com:443/workflows/fb9aad14945947ee96196506c5cb99c4/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7DdF1Ybdsk60b2Q2m063oQcxDEvzKXoT3y741A6CL1s";
-
 	// releases URL
 	static readonly URL_GITHUBRELEASES: string = "https://api.github.com/repos/IAmPicard/StarTrekTimelinesSpreadsheet/releases";
 

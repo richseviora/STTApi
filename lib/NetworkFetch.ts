@@ -31,20 +31,6 @@ export class NetworkFetch implements NetworkInterface {
 		}
 	}
 
-	postjson(uri: string, form: any): Promise<any> {
-		let headers: any = {
-			"Content-type": "application/json"
-		};
-
-		let promiseFetch = window.fetch(uri, {
-			method: "post",
-			headers: headers,
-			body: JSON.stringify(form)
-		});
-
-		return promiseFetch.then((response: Response) => response.text());
-	}
-
 	get(uri: string, qs: any): Promise<any> {
 		let searchParams: URLSearchParams = new URLSearchParams();
 		for (const prop of Object.keys(qs)) {
