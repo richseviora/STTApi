@@ -5,6 +5,7 @@ export { loadFullTree } from './EquipmentTools';
 export { bestVoyageShip, loadVoyage, startVoyage } from './VoyageTools';
 export { loadGauntlet, gauntletCrewSelection, gauntletRoundOdds, payToGetNewOpponents, playContest } from './GauntletTools';
 export { ImageCache } from './ImageProvider';
+export { formatCrewStats } from './CrewTools';
 import CONFIG from "./CONFIG";
 export { CONFIG }
 

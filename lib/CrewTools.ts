@@ -1,4 +1,5 @@
 import STTApi from "./index";
+import CONFIG from "./CONFIG";
 
 function rosterFromCrew(rosterEntry: any, crew: any): void {
 	rosterEntry.level = crew.level;
@@ -109,4 +110,25 @@ function loadFrozen(rosterEntry: any): Promise<void> {
 			});
 		}
 	});
+}
+
+export function formatCrewStats(crew: any): string {
+	let SkillShortNames: { [index: string]: string } = {
+		'command_skill': 'CMD',
+		'science_skill': 'SCI',
+		'security_skill': 'SEC',
+		'engineering_skill': 'ENG',
+		'diplomacy_skill': 'DIP',
+		'medicine_skill': 'MED'
+	};
+
+	let result = '';
+	for (var skillName in CONFIG.SKILLS) {
+		let skill = crew[skillName];
+		
+		if (skill.core && (skill.core > 0)) {
+			result += `${SkillShortNames[skillName]} (${Math.floor(skill.core + (skill.min + skill.max) / 2)}) `;
+		}
+	}
+	return result;
 }
