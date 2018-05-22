@@ -73,10 +73,8 @@ export function enterGauntlet(gauntletId: number, crewIds: Array<number>): Promi
 		crew4_id:crewIds[3],
 		crew5_id:crewIds[4]
 	}).then((data: any) => {
-		if (data) {
-			//console.info("Entered gauntlet");
-			//TODO: parse data
-			return Promise.resolve();
+		if (data && data.character && data.character.gauntlets) {
+			return Promise.resolve(data.character.gauntlets[0]);
 		} else {
 			return Promise.reject("Invalid data for gauntlet!");
 		}
@@ -254,11 +252,7 @@ export interface IGauntletCrewSelection {
 	recommendations: Array<number>;
 }
 
-export function gauntletCrewSelection(currentGauntlet: any, roster: any): any {
-	// TODO: magical numbers below; tune these (or get them as parameters for customization)
-	let featuredSkillBonus: number = 1.1;
-	let critBonusDivider: number = 3;
-
+export function gauntletCrewSelection(currentGauntlet: any, roster: any, featuredSkillBonus: number, critBonusDivider: number, preSortCount: number, includeFrozen: boolean): any {
 	const skillList = [
 		'command_skill',
 		'science_skill',
@@ -267,9 +261,15 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any): any {
 		'diplomacy_skill',
 		'medicine_skill'];
 
-	var gauntletCrew = roster.map((crew: any) => {
+	let gauntletCrew: any[] = [];
+	
+	roster.forEach((crew: any) => {
+		if ((crew.frozen > 0) && !includeFrozen) {
+			return;
+		}
+
 		let newCrew: IGauntletCrew = {
-			id: crew.id,
+			id: crew.crew_id || crew.id,
 			name: crew.name,
 			crit: 5,
 			skills: {}
@@ -290,7 +290,7 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any): any {
 			newCrew.skills[skill] = newCrew.skills[skill] * (100 + newCrew.crit / critBonusDivider) / 100;
 		});
 
-		return newCrew;
+		gauntletCrew.push(newCrew);
 	});
 
 	let sortedCrew: ISortedCrew[] = [];
@@ -312,9 +312,10 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any): any {
 		});
 		result.best[skill] = gauntletCrew[0].name;
 
-		// Get the first 2 in the final score sheet
-		sortedCrew.push({ 'id': gauntletCrew[0].id, 'name': gauntletCrew[0].name, 'score': getScore(gauntletCrew[0], skill) });
-		sortedCrew.push({ 'id': gauntletCrew[1].id, 'name': gauntletCrew[1].name, 'score': getScore(gauntletCrew[1], skill) });
+		// Get the first few in the final score sheet
+		for(let i = 0; i < preSortCount; i++) {
+			sortedCrew.push({ 'id': gauntletCrew[i].id, 'name': gauntletCrew[i].name, 'score': getScore(gauntletCrew[i], skill) });	
+		}
 	});
 
 	sortedCrew.sort((a: any, b: any) => {
