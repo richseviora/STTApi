@@ -47,6 +47,10 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 export function matchCrew(character: any): Promise<any> {
 	function getDefaults(id: number): any {
 		var crew = STTApi.getCrewAvatarById(id);
+		if (!crew) {
+			return undefined;
+		}
+
 		return {
 			id: crew.id, name: crew.name, short_name: crew.short_name, max_rarity: crew.max_rarity, symbol: crew.symbol,
 			level: 0, rarity: 0, frozen: 0, buyback: false, traits: '', rawTraits: [], portrait: crew.portrait, full_body: crew.full_body,
@@ -62,6 +66,11 @@ export function matchCrew(character: any): Promise<any> {
 	// Add all the crew in the active roster
 	character.crew.forEach((crew: any) => {
 		rosterEntry = getDefaults(crew.archetype_id);
+		if (!rosterEntry) {
+			console.error(`Could not find the crew avatar for ${rosterEntry.name} (archetype_id ${rosterEntry.archetype_id})`);
+			return;
+		}
+
 		rosterFromCrew(rosterEntry, crew);
 		roster.push(rosterEntry);
 	});
