@@ -67,7 +67,7 @@ export function matchCrew(character: any): Promise<any> {
 	character.crew.forEach((crew: any) => {
 		rosterEntry = getDefaults(crew.archetype_id);
 		if (!rosterEntry) {
-			console.error(`Could not find the crew avatar for ${rosterEntry.name} (archetype_id ${rosterEntry.archetype_id})`);
+			console.error(`Could not find the crew avatar for archetype_id ${crew.archetype_id}`);
 			return;
 		}
 
@@ -83,6 +83,10 @@ export function matchCrew(character: any): Promise<any> {
 
 		character.stored_immortals.forEach((crew: any) => {
 			rosterEntry = getDefaults(crew.id);
+			if (!rosterEntry) {
+				console.error(`Could not find the crew avatar for frozen archetype_id ${crew.id}`);
+				return;
+			}
 			rosterEntry.frozen = crew.quantity;
 			rosterEntry.level = 100;
 			rosterEntry.rarity = rosterEntry.max_rarity;
