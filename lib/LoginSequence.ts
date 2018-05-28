@@ -180,6 +180,10 @@ export function loginSequence(onProgress: (description: string) => void, loadMis
     if (loadMissions) {
         return promise.then(() => {
             onProgress('Loading missions and quests...');
+
+            // Filter out missions in a bad state (see https://github.com/IAmPicard/StarTrekTimelinesSpreadsheet/issues/31)
+            STTApi.playerData.character.accepted_missions = STTApi.playerData.character.accepted_missions.filter((mission: any) => mission.main_story);
+
             return loadMissionData(STTApi.playerData.character.cadet_schedule.missions.concat(STTApi.playerData.character.accepted_missions), STTApi.playerData.character.dispute_histories).then((missions) => {
                 STTApi.missions = missions;
 
