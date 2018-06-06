@@ -44,7 +44,16 @@ export class NetworkFetch implements NetworkInterface {
 			}
 		}
 
-		return window.fetch(uri + "?" + searchParams.toString()).then((response: Response) => response.json());
+		return window.fetch(uri + "?" + searchParams.toString()).then((response: Response) =>
+		{
+			if (response.ok) {
+				return response.json();
+			} else {
+				return response.text().then((data) => {
+					throw new Error(`Network error; status ${response.status}; reply ${data}.`);
+				});
+			}
+		});
 	}
 
 	getRaw(uri: string, qs: any): Promise<any> {
