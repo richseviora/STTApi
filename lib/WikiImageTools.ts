@@ -42,21 +42,21 @@ function getWikiImageUrl(fileName: string, id: any): Promise<IFoundResult> {
 			};
 			return Promise.resolve(result);
 		}).then((found: IFoundResult) => {
-			return STTApi.wikiImages.put({
+			STTApi.wikiImages.put({
 				fileName: fileName,
 				url: found.url,
 				lastQueried: Date.now()
-			}).then(() => {
-				if (found.url) {
-					//console.info('Caching ' + fileName + ' with url ' + found.url);
-					return Promise.resolve(found);
-				}
-				else {
-					// the Wiki doesn't have this image yet, or it was named in a non-standard way
-					//console.info('Caching the fact that ' + fileName + ' is not available in the wiki yet');
-					return Promise.reject('The Wiki doesn\'t have an image yet for ' + fileName);
-				}
 			});
+
+			if (found.url) {
+				//console.info('Caching ' + fileName + ' with url ' + found.url);
+				return Promise.resolve(found);
+			}
+			else {
+				// the Wiki doesn't have this image yet, or it was named in a non-standard way
+				//console.info('Caching the fact that ' + fileName + ' is not available in the wiki yet');
+				return Promise.reject('The Wiki doesn\'t have an image yet for ' + fileName);
+			}
 		});
 	});
 }
