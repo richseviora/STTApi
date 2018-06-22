@@ -17,7 +17,7 @@
 */
 import { NetworkInterface } from "./NetworkInterface";
 import { NetworkFetch } from "./NetworkFetch";
-import { DexieCache, QuestsTable, ImmortalsTable, ConfigTable, WikiImageTable } from "./Cache";
+import { DexieCache, QuestsTable, EquipmentTable, ImmortalsTable, ConfigTable, WikiImageTable } from "./Cache";
 import { IChallengeSuccess, MinimalComplement } from './MissionCrewSuccess';
 import { mergeDeep } from './ObjectMerge';
 import { ImageProvider, ImageCache, IFoundResult } from './ImageProvider';
@@ -89,6 +89,10 @@ export class STTApiClass {
 
 	get quests(): Dexie.Table<QuestsTable, number> {
 		return this._cache.quests;
+	}
+	
+	get equipmentCache(): Dexie.Table<EquipmentTable, string> {
+		return this._cache.equipment;
     }
     
     get immortals(): Dexie.Table<ImmortalsTable, string> {
