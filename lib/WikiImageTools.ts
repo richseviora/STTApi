@@ -91,4 +91,12 @@ export class WikiImageProvider implements ImageProvider {
 		let fileName = iconFile + '.png';
 		return getWikiImageUrl(fileName, id);
 	}
+
+	getCached(withIcon: any): string {
+		return '';
+	}
+
+	getCrewCached(crew: any, fullBody: boolean): string {
+		return '';
+	}
 }

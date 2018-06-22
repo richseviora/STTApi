@@ -13,6 +13,10 @@ export class DummyImageCache implements ImageCache {
     saveImage(url: string, data: IBitmap): Promise<string> {
         return Promise.resolve("data:image/png;base64," + new Buffer(data.data).toString('base64'));
     }
+
+    getCached(url: string): string {
+        return '';
+    }
 }
 
 export class AssetImageProvider implements ImageProvider {
@@ -36,6 +40,20 @@ export class AssetImageProvider implements ImageProvider {
             this._baseURLAsset = STTApi.serverConfig.config.asset_server + 'bundles/' + CONFIG.CLIENT_PLATFORM + '/default/' + CONFIG.CLIENT_VERSION + '/' + STTApi.serverConfig.config.asset_bundle_version + '/';
         }
         return this._baseURLAsset;
+    }
+
+    getCached(withIcon: any): string {
+        if (!withIcon.icon)
+            return '';
+
+        if (!withIcon.icon.file)
+            return '';
+
+        return this._imageCache.getCached(withIcon.icon.file);
+    }
+
+    getCrewCached(crew: any, fullBody: boolean): string {
+        return this._imageCache.getCached(fullBody ? crew.full_body.file : crew.portrait.file);
     }
 
     getCrewImageUrl(crew: any, fullBody: boolean, id: any): Promise<IFoundResult> {

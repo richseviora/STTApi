@@ -22,6 +22,8 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 	rosterEntry.medicine_skill_core = rosterEntry.medicine_skill.core;
 
 	rosterEntry.ship_battle = crew.ship_battle;
+	rosterEntry.action = crew.action;
+	rosterEntry.flavor = crew.flavor;
 
 	rosterEntry.equipment_slots = crew.equipment_slots;
 

@@ -12,6 +12,7 @@ export interface IBitmap {
 export interface ImageCache {
 	getImage(url: string): Promise<string|undefined>;
 	saveImage(url: string, data: IBitmap): Promise<string>;
+	getCached(url: string): string;
 }
 
 export interface ImageProvider {
@@ -21,4 +22,6 @@ export interface ImageProvider {
 	getFactionImageUrl(faction: any, id: any): Promise<IFoundResult>;
 	getSprite(assetName: string, spriteName: string, id: any): Promise<IFoundResult>;
 	getImageUrl(iconFile: string, id: any): Promise<IFoundResult>;
+	getCached(withIcon: any): string;
+	getCrewCached(crew: any, fullBody: boolean): string;
 }

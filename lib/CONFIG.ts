@@ -41,6 +41,33 @@ export default class CONFIG {
 		'medicine_skill': 'Medicine'
 	};
 
+	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
+		0: 'Attack',
+		1: 'Evasion',
+		2: 'Accuracy',
+		// These are only for penalty
+		3: 'Shield Regeneration'
+	};
+
+	static readonly CREW_SHIP_BATTLE_TRIGGER: { [index: number]: string } = {
+		0: 'None',
+		1: 'Position',
+		2: 'Cloak',
+		4: 'Boarding'
+	};
+
+	static readonly CREW_SHIP_BATTLE_ABILITY_TYPE: { [index: number]: string } = {
+		0: 'Increase bonus boost by +%VAL%',
+		1: 'Immediately deals %VAL%% damage',
+		2: 'Immediately repairs Hulls by %VAL%%',
+		3: 'Immediately repairs Shields by %VAL%%',
+		4: '+%VAL% to Crit Rating',
+		5: '+%VAL% to Crit Bonus',
+		6: 'Shield regeneration +%VAL%',
+		7: '+%VAL%% to Attack Speed',
+		8: 'Increase boarding damage by %VAL%%'
+	};
+
 	static SPRITES: { [index: string]: { asset: string, url: string|undefined } } = {
 		'mastery_highest_icon': { asset: 'atlas_stt_icons', url: undefined },
 		'mastery_medium_icon': { asset: 'atlas_stt_icons', url: undefined },
