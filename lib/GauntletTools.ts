@@ -87,7 +87,7 @@ export interface ICrewOdd {
     crit_chance: number;
     used: number;
     max: number[];
-    min: number[];
+	min: number[];
     iconUrl: string | undefined;
 }
 
@@ -101,7 +101,7 @@ export interface IOpponentOdd {
     crit_chance: number;
     iconUrl: string | undefined;
     max: number[];
-    min: number[];
+	min: number[];
 }
 
 export interface IMatch {
@@ -136,15 +136,18 @@ export function gauntletRoundOdds(currentGauntlet: any): IGauntletRoundOdds {
 				crew_id: crew.crew_id,
 				crit_chance: crew.crit_chance,
 				used: crew.debuff / 4,
-				max: [],
-				min: [],
+				max: [0, 0],
+				min: [0, 0],
 				iconUrl: ''
 			};
 
 			crew.skills.forEach((skillStats: any) => {
-				if ((skillStats.skill == currentGauntlet.contest_data.primary_skill) || (skillStats.skill == currentGauntlet.contest_data.secondary_skill)) {
-					crewOdd.max.push(skillStats.max);
-					crewOdd.min.push(skillStats.min);
+				if (skillStats.skill == currentGauntlet.contest_data.primary_skill) {
+					crewOdd.max[0] = skillStats.max;
+					crewOdd.min[0] = skillStats.min;
+				} else if (skillStats.skill == currentGauntlet.contest_data.secondary_skill) {
+					crewOdd.max[1] = skillStats.max;
+					crewOdd.min[1] = skillStats.min;
 				}
 			});
 
@@ -162,14 +165,17 @@ export function gauntletRoundOdds(currentGauntlet: any): IGauntletRoundOdds {
 			archetype_symbol: opponent.crew_contest_data.crew[0].archetype_symbol,
 			crit_chance: opponent.crew_contest_data.crew[0].crit_chance,
 			iconUrl: '',
-			max: [],
-			min: []
+			max: [0, 0],
+			min: [0, 0]
 		};
 
 		opponent.crew_contest_data.crew[0].skills.forEach((skillStats: any) => {
-			if ((skillStats.skill == currentGauntlet.contest_data.primary_skill) || (skillStats.skill == currentGauntlet.contest_data.secondary_skill)) {
-				opponentOdd.max.push(skillStats.max);
-				opponentOdd.min.push(skillStats.min);
+			if (skillStats.skill == currentGauntlet.contest_data.primary_skill) {
+				opponentOdd.max[0] = skillStats.max;
+				opponentOdd.min[0] = skillStats.min;
+			} else if (skillStats.skill == currentGauntlet.contest_data.secondary_skill) {
+				opponentOdd.max[1] = skillStats.max;
+				opponentOdd.min[1] = skillStats.min;
 			}
 		});
 
@@ -179,7 +185,7 @@ export function gauntletRoundOdds(currentGauntlet: any): IGauntletRoundOdds {
 	function roll(data: any, skillIndex: number): number {
 		let max = (Math.random() < 0.5) ? 0 : 1;
 		let min = (Math.random() < 0.5) ? 0 : 1;
-		if (data.max.length >= skillIndex + 1)
+		if (data.min[skillIndex] > 0)
 		{
 			max = data.max[skillIndex];
 			min = data.min[skillIndex];
