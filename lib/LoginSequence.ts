@@ -86,7 +86,10 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
-            onProgress('Caching crew images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching crew images... (' + current++ + '/' + total + ')');
         }
 
         crew.iconBodyUrl = STTApi.imageProvider.getCrewCached(crew, true);
@@ -102,9 +105,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
-            onProgress('Caching crew images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching crew images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Caching crew images... (' + current + '/' + total + ')');
 
     // Also load the avatars for crew not in the roster
     for (let crew of STTApi.crewAvatars) {
@@ -121,9 +129,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
-            onProgress('Caching crew images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching crew images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Caching crew images... (' + current + '/' + total + ')');
 
     //await Promise.all(iconPromises);
 
@@ -150,9 +163,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
-            onProgress('Caching ship images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching ship images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Caching ship images... (' + current + '/' + total + ')');
 
     //await Promise.all(iconPromises);
 
@@ -179,9 +197,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
-            onProgress('Caching item images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching item images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Caching item images... (' + current + '/' + total + ')');
 
     //await Promise.all(iconPromises);
 
@@ -212,9 +235,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
             }).catch((error) => { }));
         } else {
             // Image is already cached
-            onProgress('Caching equipment images... (' + current++ + '/' + total + ')');
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching equipment images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Caching equipment images... (' + current + '/' + total + ')');
 
     //await Promise.all(iconPromises);
 
