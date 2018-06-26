@@ -99,4 +99,8 @@ export class WikiImageProvider implements ImageProvider {
 	getCrewCached(crew: any, fullBody: boolean): string {
 		return '';
 	}
+
+	getSpriteCached(assetName: string, spriteName: string): string {
+		return '';
+	}
 }

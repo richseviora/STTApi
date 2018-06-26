@@ -56,6 +56,10 @@ export class AssetImageProvider implements ImageProvider {
         return this._imageCache.getCached(fullBody ? crew.full_body.file : crew.portrait.file);
     }
 
+    getSpriteCached(assetName: string, spriteName: string): string {
+        return this._imageCache.getCached(((assetName.length > 0) ? (assetName + '_') : '') + spriteName);
+    }
+
     getCrewImageUrl(crew: any, fullBody: boolean, id: any): Promise<IFoundResult> {
         return this.getImageUrl(fullBody ? crew.full_body.file : crew.portrait.file, id);
     }

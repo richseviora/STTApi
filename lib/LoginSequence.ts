@@ -251,16 +251,27 @@ export async function loginSequence(onProgress: (description: string) => void, l
     onProgress('Caching misc images... (' + current + '/' + total + ')');
     //iconPromises = [];
     for (var sprite in CONFIG.SPRITES) {
-        iconPromises.push(STTApi.imageProvider.getSprite(CONFIG.SPRITES[sprite].asset, sprite, sprite).then((found: IFoundResult) => {
-            onProgress('Caching misc images... (' + current++ + '/' + total + ')');
-            for (var sprite in CONFIG.SPRITES) {
-                if (sprite === found.id)
-                    CONFIG.SPRITES[sprite].url = found.url;
-            }
+        CONFIG.SPRITES[sprite].url = STTApi.imageProvider.getSpriteCached(CONFIG.SPRITES[sprite].asset, sprite);
+        if (CONFIG.SPRITES[sprite].url === '') {
+            iconPromises.push(STTApi.imageProvider.getSprite(CONFIG.SPRITES[sprite].asset, sprite, sprite).then((found: IFoundResult) => {
+                onProgress('Caching misc images... (' + current++ + '/' + total + ')');
+                for (var sprite in CONFIG.SPRITES) {
+                    if (sprite === found.id)
+                        CONFIG.SPRITES[sprite].url = found.url;
+                }
 
-            return Promise.resolve();
-        }).catch((error: any) => { /*console.warn(error);*/ }));
+                return Promise.resolve();
+            }).catch((error: any) => { /*console.warn(error);*/ }));
+        } else {
+            // Image is already cached
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching misc images... (' + current++ + '/' + total + ')');
+        }
     }
+
+    onProgress('Caching misc images... (' + current + '/' + total + ')');
 
     await Promise.all(iconPromises);
 

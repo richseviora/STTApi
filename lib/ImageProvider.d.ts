@@ -24,4 +24,5 @@ export interface ImageProvider {
 	getImageUrl(iconFile: string, id: any): Promise<IFoundResult>;
 	getCached(withIcon: any): string;
 	getCrewCached(crew: any, fullBody: boolean): string;
+	getSpriteCached(assetName: string, spriteName: string): string;
 }
