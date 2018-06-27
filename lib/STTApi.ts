@@ -18,9 +18,10 @@
 import { NetworkInterface } from "./NetworkInterface";
 import { NetworkFetch } from "./NetworkFetch";
 import { DexieCache, QuestsTable, EquipmentTable, ImmortalsTable, ConfigTable, WikiImageTable } from "./Cache";
-import { IChallengeSuccess, MinimalComplement } from './MissionCrewSuccess';
+import { IChallengeSuccess } from './MissionCrewSuccess';
+import { MinimalComplement } from "./MinimalComplement";
 import { mergeDeep } from './ObjectMerge';
-import { ImageProvider, ImageCache, IFoundResult } from './ImageProvider';
+import { ImageProvider, ImageCache } from './ImageProvider';
 import { WikiImageProvider } from './WikiImageTools';
 import { AssetImageProvider } from './AssetImageProvider';
 import Dexie from "dexie";
@@ -147,94 +148,86 @@ export class STTApiClass {
 		return this.crewAvatars.find((avatar: any) => avatar.symbol === symbol);
 	}
 
-	login(username: string, password: string, autoLogin: boolean): Promise<any> {
-		return this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
+	async login(username: string, password: string, autoLogin: boolean): Promise<any> {
+		let data = await this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
 			"username": username,
 			"password": password,
 			"client_id": CONFIG.CLIENT_ID,
 			"grant_type": "password"
-		}).then((data: any) => {
-			if (data.error_description) {
-				return Promise.reject(data.error_description);
-			} else if (data.access_token) {
-				return this._loginWithAccessToken(data.access_token, autoLogin);
-			} else {
-				return Promise.reject("Invalid data for login!");
-			}
 		});
+
+		if (data.error_description) {
+			throw new Error(data.error_description);
+		} else if (data.access_token) {
+			return this._loginWithAccessToken(data.access_token, autoLogin);
+		} else {
+			throw new Error("Invalid data for login!");
+		}
 	}
 
-	loginWithCachedAccessToken(): Promise<boolean> {
-		return this._cache.config.where('key').equals('autoLogin').first((entry: ConfigTable | undefined) => {
-			if (entry && entry.value === true) {
-				return this._cache.config.where('key').equals('accessToken').first((entry: ConfigTable | undefined) => {
-					if (entry && entry.value) {
-						this._accessToken = entry.value;
-						return Promise.resolve(true);
-					}
-					else {
-						return Promise.resolve(false);
-					}
-				});
+	async loginWithCachedAccessToken(): Promise<boolean> {
+		let entry = await this._cache.config.where('key').equals('autoLogin').first();
+		if (entry && entry.value === true) {
+			entry = await this._cache.config.where('key').equals('accessToken').first();
+			if (entry && entry.value) {
+				this._accessToken = entry.value;
+				return true;
 			}
 			else {
-				return Promise.resolve(false);
+				return false;
 			}
-		});
-	}
-
-	private _loginWithAccessToken(access_token: string, autoLogin: boolean): Promise<void> {
-		this._accessToken = access_token;
-		console.info("Logged in with access token " + access_token);
-
-		if (autoLogin) {
-			return this._cache.config.put({
-				key: 'autoLogin',
-				value: autoLogin
-			}).then(() => {
-				return this._cache.config.put({
-					key: 'accessToken',
-					value: access_token
-				}).then(() => {
-					return Promise.resolve();
-				});
-			});
 		}
 		else {
-			return Promise.resolve();
+			return false;
 		}
 	}
 
-	loginWithFacebook(facebookAccessToken: string, facebookUserId: string, autoLogin: boolean): Promise<any> {
-		return this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
+	private async _loginWithAccessToken(access_token: string, autoLogin: boolean): Promise<void> {
+		this._accessToken = access_token;
+
+		/*await*/ this._cache.config.put({
+			key: 'autoLogin',
+			value: autoLogin
+		});
+
+		if (autoLogin) {
+			/*await*/ this._cache.config.put({
+				key: 'accessToken',
+				value: access_token
+			});
+		}
+	}
+
+	async loginWithFacebook(facebookAccessToken: string, facebookUserId: string, autoLogin: boolean): Promise<any> {
+		let data = await this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
 			"third_party.third_party": "facebook",
 			"third_party.access_token": facebookAccessToken,
 			"third_party.uid": facebookUserId,
 			"client_id": CONFIG.CLIENT_ID,
 			"grant_type": "third_party"
-		}).then((data: any) => {
-			if (data.error_description) {
-				return Promise.reject(data.error_description);
-			} else if (data.access_token) {
-				return this._loginWithAccessToken(data.access_token, autoLogin);
-			} else {
-				return Promise.reject("Invalid data for login!");
-			}
 		});
+
+		if (data.error_description) {
+			throw new Error(data.error_description);
+		} else if (data.access_token) {
+			return this._loginWithAccessToken(data.access_token, autoLogin);
+		} else {
+			throw new Error("Invalid data for login!");
+		}
 	}
 
-	executeGetRequest(resourceUrl: string, qs: any = {}): Promise<any> {
+	async executeGetRequest(resourceUrl: string, qs: any = {}): Promise<any> {
 		if (this._accessToken === undefined) {
-			return Promise.reject("Not logged in!");
+			throw new Error("Not logged in!");
 		}
 
 		return this._net.get(CONFIG.URL_SERVER + resourceUrl,
 			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs));
 	}
 
-	executePostRequest(resourceUrl: string, qs: any): Promise<any> {
+	async executePostRequest(resourceUrl: string, qs: any): Promise<any> {
 		if (this._accessToken === undefined) {
-			return Promise.reject("Not logged in!");
+			throw new Error("Not logged in!");
 		}
 
 		return this._net.post(CONFIG.URL_SERVER + resourceUrl,
@@ -243,136 +236,106 @@ export class STTApiClass {
 		);
 	}
 
-	loadServerConfig(): Promise<any> {
-		return this.executeGetRequest("config", {
+	async loadServerConfig(): Promise<any> {
+		let data = await this.executeGetRequest("config", {
 			platform:'WebGLPlayer',
 			device_type:'Desktop',
 			client_version:CONFIG.CLIENT_VERSION,
 			platform_folder:CONFIG.CLIENT_PLATFORM
-		}).then((data: any) => {
-			this.serverConfig = data;
-			console.info("Loaded server config");
-			return Promise.resolve();
 		});
+
+		this.serverConfig = data;
 	}
 
-	loadCrewArchetypes(): Promise<any> {
-		return this.executeGetRequest("character/get_avatar_crew_archetypes").then((data: any) => {
-			if (data.crew_avatars) {
-				this.crewAvatars = data.crew_avatars;
-				console.info("Loaded " + data.crew_avatars.length +" crew avatars");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for crew avatars!");
-			}
-		});
+	async loadCrewArchetypes(): Promise<any> {
+		let data = await this.executeGetRequest("character/get_avatar_crew_archetypes");
+		if (data.crew_avatars) {
+			this.crewAvatars = data.crew_avatars;
+		} else {
+			throw new Error("Invalid data for crew avatars!");
+		}
 	}
 
-	loadPlatformConfig(): Promise<any> {
-		return this.executeGetRequest("config/platform").then((data: any) => {
-			this._platformConfig = data;
-			console.info("Loaded platform config");
-			return Promise.resolve();
-		});
+	async loadPlatformConfig(): Promise<any> {
+		let data = await this.executeGetRequest("config/platform");
+		this._platformConfig = data;
 	}
 
-	loadPlayerData(): Promise<any> {
-		return this.executeGetRequest("player").then((data: any) => {
-			if (data.player) {
-				this._playerData = data;
-				console.info("Loaded player data");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for player!");
-			}
-		});
+	async loadPlayerData(): Promise<any> {
+		let data = await this.executeGetRequest("player");
+		if (data.player) {
+			this._playerData = data;
+		} else {
+			throw new Error("Invalid data for player!");
+		}
 	}
 
-	resyncPlayerCurrencyData(): Promise<any> {
+	async resyncPlayerCurrencyData(): Promise<any> {
 		// this code reloads minimal stuff to update the player information and merge things back in
 		// "player/resync_inventory" is more heavy-handed and has the potential to overwrite some stuff we added on like images, but can also bring in any new items, crew or ships
-		return this.executeGetRequest("player/resync_currency").then((data: any) => {
-			if (data.player) {
-				this._playerData.player = mergeDeep(this._playerData.player, data.player);
-				console.info("Resynced player currency data");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for player!");
-			}
-		});
+		let data = await this.executeGetRequest("player/resync_currency");
+		if (data.player) {
+			this._playerData.player = mergeDeep(this._playerData.player, data.player);
+		} else {
+			throw new Error("Invalid data for player!");
+		}
 	}
 
-	loadShipSchematics(): Promise<any> {
-		return this.executeGetRequest("ship_schematic").then((data: any) => {
-			if (data.schematics) {
-				this.shipSchematics = data.schematics;
-				console.info("Loaded " + data.schematics.length + " ship schematics");
-
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for ship schematics!");
-			}
-		});
+	async loadShipSchematics(): Promise<any> {
+		let data = await this.executeGetRequest("ship_schematic");
+		if (data.schematics) {
+			this.shipSchematics = data.schematics;
+		} else {
+			throw new Error("Invalid data for ship schematics!");
+		}
 	}
 
-	loadFrozenCrew(symbol: string): Promise<any> {
-		return this.executePostRequest("stasis_vault/immortal_restore_info", { symbol: symbol }).then((data: any) => {
-			if (data.crew) {
-				//console.info("Loaded frozen crew stats for " + symbol);
-				return Promise.resolve(data.crew);
-			} else {
-				return Promise.reject("Invalid data for frozen crew!");
-			}
-		});
+	async loadFrozenCrew(symbol: string): Promise<any> {
+		let data = await this.executePostRequest("stasis_vault/immortal_restore_info", { symbol: symbol });
+		if (data.crew) {
+			return data.crew;
+		} else {
+			throw new Error("Invalid data for frozen crew!");
+		}
 	}
 
-	loadFleetMemberInfo(guildId: string): Promise<any> {
-		return this.executePostRequest("fleet/complete_member_info", { guild_id: guildId }).then((data: any) => {
-			if (data) {
-				this._fleetMemberInfo = data;
-				console.info("Loaded fleet member info");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for fleet member info!");
-			}
-		});
+	async loadFleetMemberInfo(guildId: string): Promise<any> {
+		let data = await this.executePostRequest("fleet/complete_member_info", { guild_id: guildId });
+		if (data) {
+			this._fleetMemberInfo = data;
+		} else {
+			throw new Error("Invalid data for fleet member info!");
+		}
 	}
 
-	loadFleetData(guildId: string): Promise<any> {
-		return this.executeGetRequest("fleet/" + guildId).then((data: any) => {
-			if (data.fleet) {
-				this.fleetData = data.fleet;
-				console.info("Loaded fleet data");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for fleet!");
-			}
-		});
+	async loadFleetData(guildId: string): Promise<any> {
+		let data = await this.executeGetRequest("fleet/" + guildId);
+		if (data.fleet) {
+			this.fleetData = data.fleet;
+		} else {
+			throw new Error("Invalid data for fleet!");
+		}
 	}
 
-	loadStarbaseData(guildId: string): Promise<any> {
-		return this.executeGetRequest("starbase/get").then((data: any) => {
-			if (data) {
-				this._starbaseData = data;
-				console.info("Loaded starbase data");
-				return Promise.resolve();
-			} else {
-				return Promise.reject("Invalid data for starbase!");
-			}
-		});
+	async loadStarbaseData(guildId: string): Promise<any> {
+		let data = await this.executeGetRequest("starbase/get");
+		if (data) {
+			this._starbaseData = data;
+		} else {
+			throw new Error("Invalid data for starbase!");
+		}
 	}
 
-	inspectPlayer(playerId: string): Promise<any> {
-		return this.executeGetRequest("player/inspect/" + playerId).then((data: any) => {
-			if (data.player) {
-				return Promise.resolve(data.player);
-			} else {
-				return Promise.reject("Invalid data for player!");
-			}
-		});
+	async inspectPlayer(playerId: string): Promise<any> {
+		let data = await this.executeGetRequest("player/inspect/" + playerId);
+		if (data.player) {
+			return data.player;
+		} else {
+			throw new Error("Invalid data for player!");
+		}
 	}
 
 	getGithubReleases(): Promise<any> {
-		return this._net.get(CONFIG.URL_GITHUBRELEASES, {})
+		return this._net.get(CONFIG.URL_GITHUBRELEASES, {});
 	}
 }

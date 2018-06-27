@@ -3,6 +3,11 @@ export interface Rarity {
 	color: string;
 }
 
+export interface Mastery {
+	name: string;
+	url: () => string | undefined;
+}
+
 function rgbToHex(r: number, g: number, b: number): string {
 	return "#" + ((b | g << 8 | r << 16) / 0x1000000).toString(16).substring(2);
 }
@@ -30,6 +35,12 @@ export default class CONFIG {
 		{ name: 'Rare', color: rgbToHex(90, 170, 255) },
 		{ name: 'Super Rare', color: rgbToHex(170, 45, 235) },
 		{ name: 'Legendary', color: rgbToHex(253, 210, 106) }
+	];
+
+	static readonly MASTERY_LEVELS: Mastery[] = [
+		{ name: 'Normal', url: () => CONFIG.SPRITES['mastery_lowest_icon'].url },
+		{ name: 'Elite', url: () => CONFIG.SPRITES['mastery_medium_icon'].url },
+		{ name: 'Epic', url: () => CONFIG.SPRITES['mastery_highest_icon'].url }
 	];
 
 	static readonly SKILLS: { [index: string]: string } = {

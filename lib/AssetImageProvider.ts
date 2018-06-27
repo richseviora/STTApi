@@ -1,9 +1,7 @@
 import STTApi from "./index";
 import CONFIG from "./CONFIG";
 import { ImageProvider, ImageCache, IBitmap, IFoundResult } from './ImageProvider';
-import { WorkerPool, WorkerTask } from './WorkerPool';
-
-import { parseAssetBundle, rotateAndConvertToPng } from 'ab-parser';
+import { WorkerPool } from './WorkerPool';
 
 export class DummyImageCache implements ImageCache {
     getImage(url: string): Promise<string | undefined> {
@@ -76,69 +74,51 @@ export class AssetImageProvider implements ImageProvider {
         return this.getImageUrl(faction.icon.file, id); //faction.reputation_item_icon.file and faction.shuttle_token_preview_item.icon.file
     }
 
-    getSprite(assetName: string, spriteName: string, id: any): Promise<IFoundResult> {
-        return this._imageCache.getImage(((assetName.length > 0) ? (assetName + '_') : '') + spriteName).then((cachedUrl: string | undefined) => {
-            if (cachedUrl) {
-                return Promise.resolve({
-                    id: id,
-                    url: cachedUrl
-                });
-            }
-
-            return STTApi.networkHelper.getRaw(this.baseURLAsset + ((assetName.length > 0) ? assetName : spriteName) + '.sd', undefined).then((data: any) => {
-                if (!data) {
-                    return Promise.reject('Fail to load image');
-                }
-
-                return new Promise<any>((resolve, reject) => {
-                    this._workerPool.addWorkerTask({ data, resolve, assetName, spriteName });
-                }).then((rawBitmap: any) => {
-                    return this._imageCache.saveImage(((assetName.length > 0) ? (assetName + '_') : '') + spriteName, rawBitmap).then((url: string) => {
-                        return Promise.resolve({
-                            id: id,
-                            url: url
-                        });
-                    });
-                });
-            });
-        });
-    }
-
-    getImageUrl(iconFile: string, id: any): Promise<IFoundResult> {
-        return this._imageCache.getImage(iconFile).then((cachedUrl: string | undefined) => {
-            if (cachedUrl) {
-                return Promise.resolve({
-                    id: id,
-                    url: cachedUrl
-                });
-            }
-
-            // Most assets have the .sd extensions, a few have the .ld extension; this is available in asset_bundles but I can't extract that in JavaScript
-            return STTApi.networkHelper.getRaw(this.getAssetUrl(iconFile) + '.sd', undefined).then((data: any) => {
-                return this.processData(iconFile, id, data);
-            }).catch((error) => {
-                return STTApi.networkHelper.getRaw(this.getAssetUrl(iconFile) + '.ld', undefined).then((data: any) => {
-                    return this.processData(iconFile, id, data);
-                });
-            });
-        });
-    }
-
-    private processData(iconFile: string, id: any, data: any): Promise<IFoundResult> {
-        if (!data) {
-            return Promise.reject('Fail to load image');
+    async getSprite(assetName: string, spriteName: string, id: any): Promise<IFoundResult> {
+        let cachedUrl = await this._imageCache.getImage(((assetName.length > 0) ? (assetName + '_') : '') + spriteName);
+        if (cachedUrl) {
+            return { id: id, url: cachedUrl };
         }
 
-        return new Promise<any>((resolve, reject) => {
+        let data = await STTApi.networkHelper.getRaw(this.baseURLAsset + ((assetName.length > 0) ? assetName : spriteName) + '.sd', undefined)
+        if (!data) {
+            throw new Error('Fail to load image');
+        }
+
+        let rawBitmap = await new Promise<any>((resolve, reject) => { this._workerPool.addWorkerTask({ data, resolve, assetName, spriteName }); });
+        let url = await this._imageCache.saveImage(((assetName.length > 0) ? (assetName + '_') : '') + spriteName, rawBitmap);
+        return { id, url };
+    }
+
+    async getImageUrl(iconFile: string, id: any): Promise<IFoundResult> {
+        let cachedUrl = await this._imageCache.getImage(iconFile)
+        if (cachedUrl) {
+            return { id, url: cachedUrl };
+        }
+
+        let data: any;
+        try {
+            data = await STTApi.networkHelper.getRaw(this.getAssetUrl(iconFile) + '.sd', undefined);
+        }
+        catch (err) {
+            // Most assets have the .sd extensions, a few have the .ld extension; this is available in asset_bundles but I can't extract that in JavaScript
+            data = await STTApi.networkHelper.getRaw(this.getAssetUrl(iconFile) + '.ld', undefined);
+        }
+
+        return this.processData(iconFile, id, data);
+    }
+
+    private async processData(iconFile: string, id: any, data: any): Promise<IFoundResult> {
+        if (!data) {
+            throw new Error('Fail to load image');
+        }
+
+        let rawBitmap = await new Promise<any>((resolve, reject) => {
             this._workerPool.addWorkerTask({ data, resolve, assetName: undefined, spriteName: undefined });
-        }).then((rawBitmap: any) => {
-            return this._imageCache.saveImage(iconFile, rawBitmap).then((url: string) => {
-                return Promise.resolve({
-                    id: id,
-                    url: url
-                });
-            });
         });
+
+        let url = await this._imageCache.saveImage(iconFile, rawBitmap);
+        return { id, url };
     }
 
     private getAssetUrl(iconFile: string): string {

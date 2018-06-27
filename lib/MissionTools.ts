@@ -154,6 +154,7 @@ export async function loadMissionData(accepted_missions: any, dispute_histories:
 	});
 
 	await Promise.all(questPromises);
+
 	if (dispute_histories) {
 		// Pretend the episodes (disputes) are missions too, to get them to show up
 		dispute_histories.forEach((dispute: any) => {

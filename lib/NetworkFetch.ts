@@ -4,7 +4,7 @@ import 'url-search-params-polyfill';
 import CONFIG from "./CONFIG";
 
 export class NetworkFetch implements NetworkInterface {
-	post(uri: string, form: any, bearerToken: string | undefined = undefined, getjson: boolean = true): Promise<any> {
+	async post(uri: string, form: any, bearerToken: string | undefined = undefined, getjson: boolean = true): Promise<any> {
 		let searchParams: URLSearchParams = new URLSearchParams();
 		for (const prop of Object.keys(form)) {
 			searchParams.set(prop, form[prop]);
@@ -18,20 +18,20 @@ export class NetworkFetch implements NetworkInterface {
 			headers.Authorization = "Bearer " + btoa(bearerToken);
 		}
 
-		let promiseFetch = window.fetch(uri, {
+		let response = await window.fetch(uri, {
 			method: "post",
 			headers: headers,
 			body: searchParams
 		});
 
 		if (getjson) {
-			return promiseFetch.then((response: Response) => response.json());
+			return response.json();
 		} else {
-			return promiseFetch.then((response: Response) => response.text());
+			return response.text();
 		}
 	}
 
-	get(uri: string, qs: any): Promise<any> {
+	async get(uri: string, qs: any): Promise<any> {
 		let searchParams: URLSearchParams = new URLSearchParams();
 		for (const prop of Object.keys(qs)) {
 			if (Array.isArray(qs[prop])) {
@@ -44,19 +44,17 @@ export class NetworkFetch implements NetworkInterface {
 			}
 		}
 
-		return window.fetch(uri + "?" + searchParams.toString()).then((response: Response) =>
-		{
-			if (response.ok) {
-				return response.json();
-			} else {
-				return response.text().then((data) => {
-					throw new Error(`Network error; status ${response.status}; reply ${data}.`);
-				});
-			}
-		});
+		let response = await window.fetch(uri + "?" + searchParams.toString());
+
+		if (response.ok) {
+			return response.json();
+		} else {
+			let data = await response.text();
+			throw new Error(`Network error; status ${response.status}; reply ${data}.`);
+		}
 	}
 
-	getRaw(uri: string, qs: any): Promise<any> {
+	async getRaw(uri: string, qs: any): Promise<any> {
 		// TODO: this should not be in here (networkfetch should be agnostic of its callers)
 		let headers: any = {
 			'Origin': CONFIG.URL_SERVER,
@@ -65,28 +63,27 @@ export class NetworkFetch implements NetworkInterface {
 			'Accept-Encoding': 'gzip, deflate, br'
 		};
 
-		return window.fetch(uri, {
+		let response = await window.fetch(uri, {
 			method: "get",
 			headers: headers
-		}).then((response: Response) => {
-			if (response && response.ok && response.body) {
-				var reader = response.body.getReader();
-				let buffers: Buffer[] = [];
-				let getAllData = (): Promise<any> => {
-					return reader.read().then(function (result) {
-						if (!result.done) {
-							buffers.push(new Buffer(result.value));
-							return getAllData();
-						}
+		});
 
-						return Promise.resolve(Buffer.concat(buffers));
-					});
+		if (response && response.ok && response.body) {
+			var reader = response.body.getReader();
+			let buffers: Buffer[] = [];
+			let getAllData = async (): Promise<any> => {
+				let result = await reader.read();
+				if (!result.done) {
+					buffers.push(new Buffer(result.value));
+					return getAllData();
 				}
 
-				return getAllData();
+				return Buffer.concat(buffers);
 			}
 
-			return Promise.reject("Fail loading data");
-		});
+			return getAllData();
+		}
+
+		throw new Error("Fail loading data");
 	}
 }

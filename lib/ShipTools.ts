@@ -13,7 +13,7 @@ export function matchShips(ships: any): Promise<any> {
 		}
 
 		if (schematic.ship.traits) {
-			schematic.ship.traitNames = schematic.ship.traits.concat(schematic.ship.traits_hidden).map((trait: any) => { return STTApi.getShipTraitName(trait); }).join();
+			schematic.ship.traitNames = schematic.ship.traits.concat(schematic.ship.traits_hidden).map((trait: any) => STTApi.getShipTraitName(trait)).join();
 		} else {
 			schematic.ship.traitNames = '';
 		}

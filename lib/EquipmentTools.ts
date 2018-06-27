@@ -45,7 +45,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     onProgress(`Loading equipment... (${missingEquipment.length} remaining)`);
     if (missingEquipment.length == 0) {
         // We're done loading, let's cache the current list, to save on future loading time
-        await STTApi.equipmentCache.put({
+        /*await*/ STTApi.equipmentCache.put({
             digest: STTApi.serverConfig.config.craft_config.recipe_tree.digest,
             archetypeCache: STTApi.itemArchetypeCache.archetypes
         });
@@ -62,7 +62,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     }
 
     // We're done loading, let's cache the current list, to save on future loading time
-    await STTApi.equipmentCache.put({
+    /*await*/ STTApi.equipmentCache.put({
         digest: STTApi.serverConfig.config.craft_config.recipe_tree.digest,
         archetypeCache: STTApi.itemArchetypeCache.archetypes
     });

@@ -1,6 +1,6 @@
 import { parseAssetBundle } from 'ab-parser';
 
-function parseAndConvertToPng(data: any): any {
+function parseFromBundle(data: any): any {
     let assetBundle = parseAssetBundle(new Uint8Array(data.buffer));
     if (!assetBundle || !assetBundle.imageBitmap) {
         console.error('Fail to parse an image out of this bundle!');
@@ -8,7 +8,7 @@ function parseAndConvertToPng(data: any): any {
     }
     else {
         if (data.assetName && data.assetName.length > 0) {
-            let sprite = assetBundle.sprites.find((sprite: any) => sprite.spriteName == data.spriteName);
+            let sprite = assetBundle.sprites.find((sprite: any) => sprite.spriteName === data.spriteName);
             if (!sprite) {
                 console.error('Sprite not found!');
                 return [];
@@ -22,7 +22,7 @@ function parseAndConvertToPng(data: any): any {
 }
 
 self.addEventListener('message', (message: any) => {
-    let result = parseAndConvertToPng(message.data);
+    let result = parseFromBundle(message.data);
 
     if (result.data.length > 0) {
         (self as any).postMessage(result, [result.data.buffer]);

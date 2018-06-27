@@ -1,7 +1,4 @@
-class MinimalComplement {
-	unneededCrew: Array<number>;
-    neededCrew: Array<number>;
-}
+import { MinimalComplement } from "./MinimalComplement";
 
 function computeCrewSuccessmissionSuccess(missionSuccess: any): MinimalComplement {
     let baseline = 0;
@@ -19,8 +16,6 @@ function computeCrewSuccessmissionSuccess(missionSuccess: any): MinimalComplemen
     // The algorithm below is suboptimal but it's much cheaper to run
 
     // Calculate minimal set of crew out of allConsideredCrew that still yields the same result for all challenges
-    let start = allConsideredCrew.size;
-
     let removedCrew = new Set<number>();
 
     let before;
@@ -31,7 +26,7 @@ function computeCrewSuccessmissionSuccess(missionSuccess: any): MinimalComplemen
             let result = 0;
 
             missionSuccess.forEach((entry: any) => {
-                let filteredCrew = entry.crew.filter((crew: any) => { return (crew.crew.id != crewId) && !removedCrew.has(crew.crew.id); });
+                let filteredCrew = entry.crew.filter((crew: any) => (crew.crew.id != crewId) && !removedCrew.has(crew.crew.id));
                 result += (filteredCrew.length > 0) ? filteredCrew[0].success : 0;
             });
 

@@ -46,7 +46,7 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 	}
 }
 
-export function matchCrew(character: any): Promise<any> {
+export async function matchCrew(character: any): Promise<any> {
 	function getDefaults(id: number): any {
 		var crew = STTApi.getCrewAvatarById(id);
 		if (!crew) {
@@ -97,34 +97,27 @@ export function matchCrew(character: any): Promise<any> {
 			frozenPromises.push(loadFrozen(rosterEntry));
 		});
 
-		return Promise.all(frozenPromises).then(() => {
-			return Promise.resolve(roster);
-		});
+		await Promise.all(frozenPromises);
 	}
-	else {
-		return Promise.resolve(roster);
-	}
+
+	return roster;
 }
 
-function loadFrozen(rosterEntry: any): Promise<void> {
-	return STTApi.immortals.where('symbol').equals(rosterEntry.symbol).first((entry: any) => {
-		if (entry) {
-			//console.info('Found ' + rosterEntry.symbol + ' in the immortalized crew cache');
-			rosterFromCrew(rosterEntry, entry.crew);
-			return Promise.resolve();
-		} else {
-			return STTApi.loadFrozenCrew(rosterEntry.symbol).then((crew: any) => {
-				rosterFromCrew(rosterEntry, crew);
+async function loadFrozen(rosterEntry: any): Promise<void> {
+	let entry = await STTApi.immortals.where('symbol').equals(rosterEntry.symbol).first();
+	if (entry) {
+		//console.info('Found ' + rosterEntry.symbol + ' in the immortalized crew cache');
+		rosterFromCrew(rosterEntry, entry.crew);
+	} else {
+		let crew = STTApi.loadFrozenCrew(rosterEntry.symbol);
+		rosterFromCrew(rosterEntry, crew);
 
-				return STTApi.immortals.put({
-					symbol: rosterEntry.symbol,
-					crew: crew
-				}).then(() => {
-					return Promise.resolve();
-				});
-			});
-		}
-	});
+		// We don't need to await, as this is just populating a cache and can be done whenever
+		STTApi.immortals.put({
+			symbol: rosterEntry.symbol,
+			crew: crew
+		});
+	}
 }
 
 export function formatCrewStats(crew: any): string {

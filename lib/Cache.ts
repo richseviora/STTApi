@@ -1,11 +1,11 @@
 import Dexie from "dexie";
 
 export class DexieCache extends Dexie {
-    private _questsTable: Dexie.Table<QuestsTable, number>;
-    private _immortalsTable: Dexie.Table<ImmortalsTable, string>;
-    private _equipmentTable: Dexie.Table<EquipmentTable, string>;
-    private _wikiImageTable: Dexie.Table<WikiImageTable, string>;
-    private _config: Dexie.Table<ConfigTable, string>;
+    private _questsTable!: Dexie.Table<QuestsTable, number>;
+    private _immortalsTable!: Dexie.Table<ImmortalsTable, string>;
+    private _equipmentTable!: Dexie.Table<EquipmentTable, string>;
+    private _wikiImageTable!: Dexie.Table<WikiImageTable, string>;
+    private _config!: Dexie.Table<ConfigTable, string>;
 
     get quests(): Dexie.Table<QuestsTable, number> {
 		return this._questsTable;

@@ -140,11 +140,6 @@ export function calculateMissionCrewSuccess(): Array<IChallengeSuccess> {
     return log;
 }
 
-export class MinimalComplement {
-	unneededCrew: Array<number> = [];
-    neededCrew: Array<number> = [];
-}
-
 export function calculateMinimalComplementAsync(): void {
     let ComputeWorker = require("worker-loader?name=computeWorker.js!./computeWorker");
 
