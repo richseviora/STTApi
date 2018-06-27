@@ -46,16 +46,37 @@ export async function loginSequence(onProgress: (description: string) => void, l
         }
     ];
 
+    // These things are now loading in parallel, the status will always be the last one in the list (which is probably fine)
+    let promises: Array<Promise<void>> = [];
     for (let res of mainResources) {
         onProgress('Loading ' + res.description + '...');
-        await res.loader();
+        promises.push(res.loader());
     }
 
+    await Promise.all(promises);
+
+    let iconPromises: Array<Promise<void>> = [];
     if (STTApi.playerData.fleet && STTApi.playerData.fleet.id != 0) {
         for (let res of fleetResources) {
             onProgress('Loading ' + res.description + '...');
-            await res.loader(STTApi.playerData.fleet.id);
+            iconPromises.push(res.loader(STTApi.playerData.fleet.id));
         }
+    }
+
+    if (loadMissions) {
+        onProgress('Loading missions and quests...');
+
+        // Filter out missions in a bad state (see https://github.com/IAmPicard/StarTrekTimelinesSpreadsheet/issues/31)
+        STTApi.playerData.character.accepted_missions = STTApi.playerData.character.accepted_missions.filter((mission: any) => mission.main_story);
+
+        // Not really an "icon", but adding it here because this is what we wait on at the end of this function (so code could run in parallel, especially network loads)
+        iconPromises.push(loadMissionData(STTApi.playerData.character.cadet_schedule.missions.concat(STTApi.playerData.character.accepted_missions), STTApi.playerData.character.dispute_histories).then((missions: any) => {
+            STTApi.missions = missions;
+
+            onProgress('Calculating mission success stats for crew...');
+            STTApi.missionSuccess = calculateMissionCrewSuccess();
+            calculateMinimalComplementAsync();
+        }));
     }
 
     onProgress('Analyzing crew...');
@@ -71,7 +92,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
     let current = 0;
     onProgress('Caching crew images... (' + current + '/' + total + ')');
 
-    let iconPromises: Array<Promise<void>> = [];
     for (let crew of roster) {
         crew.iconUrl = STTApi.imageProvider.getCrewCached(crew, false);
         if (crew.iconUrl === '') {
@@ -271,21 +291,7 @@ export async function loginSequence(onProgress: (description: string) => void, l
         }
     }
 
-    onProgress('Caching misc images... (' + current + '/' + total + ')');
+    onProgress('Finishing up...');
 
     await Promise.all(iconPromises);
-
-    if (loadMissions) {
-        onProgress('Loading missions and quests...');
-
-        // Filter out missions in a bad state (see https://github.com/IAmPicard/StarTrekTimelinesSpreadsheet/issues/31)
-        STTApi.playerData.character.accepted_missions = STTApi.playerData.character.accepted_missions.filter((mission: any) => mission.main_story);
-
-        let missions = await loadMissionData(STTApi.playerData.character.cadet_schedule.missions.concat(STTApi.playerData.character.accepted_missions), STTApi.playerData.character.dispute_histories);
-        STTApi.missions = missions;
-
-        onProgress('Calculating mission success stats for crew...');
-        STTApi.missionSuccess = calculateMissionCrewSuccess();
-        calculateMinimalComplementAsync();
-    }
 }
