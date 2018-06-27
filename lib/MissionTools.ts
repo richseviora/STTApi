@@ -29,7 +29,6 @@ async function loadQuestData(completed: boolean, quest: any) {
 		}
 	}
 	else {
-		console.log(`Loading incomplete quest '${quest.name}'.`)
 		await loadConflictInfo(quest);
 	}
 }

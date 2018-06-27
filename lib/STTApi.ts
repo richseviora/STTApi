@@ -1,6 +1,6 @@
 /*
     StarTrekTimelinesSpreadsheet - A tool to help with crew management in Star Trek Timelines
-    Copyright (C) 2017 IAmPicard
+    Copyright (c) 2017 - 2018 IAmPicard
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,21 +30,22 @@ import CONFIG from "./CONFIG";
 export class STTApiClass {
 	private _accessToken: string | undefined;
 	private _net: NetworkInterface;
-	public crewAvatars: any;
-	public serverConfig: any;
 	private _playerData: any;
 	private _platformConfig: any;
-	public shipSchematics: any;
 	private _starbaseData: any;
-	public fleetData: any;
 	private _fleetMemberInfo: any;
+	private _cache: DexieCache;
+
+	public crewAvatars: any;
+	public serverConfig: any;
+	public shipSchematics: any;
+	public fleetData: any;
 	public roster: any;
 	public ships: any;
 	public missions: any;
-	public missionSuccess: IChallengeSuccess[];
+	public missionSuccess!: IChallengeSuccess[];
 	public minimalComplement?: MinimalComplement;
-	private _cache: DexieCache;
-	public imageProvider : ImageProvider;
+	public imageProvider! : ImageProvider;
 
 	constructor() {
 		this.refreshEverything(true);

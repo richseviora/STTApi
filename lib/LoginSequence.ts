@@ -83,10 +83,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
     let roster = await matchCrew(STTApi.playerData.character);
 
     STTApi.roster = roster;
-    roster.forEach((crew: any) => {
-        crew.iconUrl = '';
-        crew.iconBodyUrl = '';
-    });
 
     let total = roster.length * 2 + STTApi.crewAvatars.length;
     let current = 0;
@@ -97,12 +93,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (crew.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, false, crew.id).then((found: IFoundResult) => {
                 onProgress('Caching crew images... (' + current++ + '/' + total + ')');
-                STTApi.roster.forEach((crew: any) => {
-                    if (crew.id === found.id)
-                        crew.iconUrl = found.url;
-                });
-
-                return Promise.resolve();
+                let crew = STTApi.roster.find((crew: any) => crew.id === found.id);
+                crew.iconUrl = found.url;
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
@@ -116,12 +108,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (crew.iconBodyUrl === '') {
             iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, true, crew.id).then((found: IFoundResult) => {
                 onProgress('Caching crew images... (' + current++ + '/' + total + ')');
-                STTApi.roster.forEach((crew: any) => {
-                    if (crew.id === found.id)
-                        crew.iconBodyUrl = found.url;
-                });
-
-                return Promise.resolve();
+                let crew = STTApi.roster.find((crew: any) => crew.id === found.id);
+                crew.iconBodyUrl = found.url;
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
@@ -140,12 +128,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (crew.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, false, crew.id).then((found: IFoundResult) => {
                 onProgress('Caching crew images... (' + current++ + '/' + total + ')');
-                STTApi.crewAvatars.forEach((crew: any) => {
-                    if (crew.id === found.id)
-                        crew.iconUrl = found.url;
-                });
-
-                return Promise.resolve();
+                let crew = STTApi.crewAvatars.find((crew: any) => crew.id === found.id);
+                crew.iconUrl = found.url;
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
@@ -174,12 +158,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (ship.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getShipImageUrl(ship, ship.name).then((found: IFoundResult) => {
                 onProgress('Caching ship images... (' + current++ + '/' + total + ')');
-                STTApi.ships.forEach((ship: any) => {
-                    if (ship.name === found.id)
-                        ship.iconUrl = found.url;
-                });
-
-                return Promise.resolve();
+                let ship = STTApi.ships.find((ship: any) => ship.name === found.id);
+                ship.iconUrl = found.url;
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
@@ -208,12 +188,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (item.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getItemImageUrl(item, item.id).then((found: IFoundResult) => {
                 onProgress('Caching item images... (' + current++ + '/' + total + ')');
-                STTApi.playerData.character.items.forEach((item: any) => {
-                    if (item.id === found.id)
-                        item.iconUrl = found.url;
-                });
-
-                return Promise.resolve();
+                let item = STTApi.playerData.character.items.find((item: any) => item.id === found.id);
+                item.iconUrl = found.url;
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached
@@ -247,11 +223,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (equipment.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getItemImageUrl(equipment, equipment.id).then((found: IFoundResult) => {
                 onProgress('Caching equipment images... (' + current++ + '/' + total + ')');
-                STTApi.itemArchetypeCache.archetypes.forEach((item: any) => {
-                    if (item.id === found.id)
-                        item.iconUrl = found.url;
-                });
-                return Promise.resolve();
+                let item = STTApi.itemArchetypeCache.archetypes.find((item: any) => item.id === found.id);
+                item.iconUrl = found.url;
             }).catch((error) => { }));
         } else {
             // Image is already cached
@@ -275,10 +248,7 @@ export async function loginSequence(onProgress: (description: string) => void, l
         if (CONFIG.SPRITES[sprite].url === '') {
             iconPromises.push(STTApi.imageProvider.getSprite(CONFIG.SPRITES[sprite].asset, sprite, sprite).then((found: IFoundResult) => {
                 onProgress('Caching misc images... (' + current++ + '/' + total + ')');
-                for (var sprite in CONFIG.SPRITES) {
-                    if (sprite === found.id)
-                        CONFIG.SPRITES[sprite].url = found.url;
-                }
+                CONFIG.SPRITES[found.id].url = found.url;
 
                 return Promise.resolve();
             }).catch((error: any) => { /*console.warn(error);*/ }));
