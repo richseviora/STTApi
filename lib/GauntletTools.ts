@@ -33,6 +33,27 @@ export async function payToGetNewOpponents(gauntlet_id: number): Promise<any> {
 	}
 }
 
+export async function payToReviveCrew(gauntlet_id: number, crew_id: number): Promise<any> {
+	let data = await STTApi.executePostRequest("gauntlet/revive_after_crew_contest_loss", { gauntlet_id: gauntlet_id, save: true, crew_id: crew_id });
+	let currentGauntlet = null;
+	if (data.message) {
+		// TODO: error checking
+	}
+	data.forEach((item: any) => {
+		if (item.character && item.character.gauntlets) {
+			currentGauntlet = item.character.gauntlets[0];
+		} else if (item.player && item.player.premium_purchasable) {
+			// TODO: this should update the global state in STTApi (in fact, these kind of updates can come in at any time and could be handled in the request api itself)
+		}
+	});
+
+	if (currentGauntlet) {
+		return { gauntlet: currentGauntlet };
+	} else {
+		throw new Error("Invalid data for gauntlet!");
+	}
+}
+
 export async function playContest(gauntlet_id: number, crew_id: number, opponent_id: number, op_crew_id: number): Promise<any> {
 	let data = await STTApi.executePostRequest("gauntlet/execute_crew_contest", {
 		gauntlet_id: gauntlet_id,
