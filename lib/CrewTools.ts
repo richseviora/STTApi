@@ -109,7 +109,7 @@ async function loadFrozen(rosterEntry: any): Promise<void> {
 		//console.info('Found ' + rosterEntry.symbol + ' in the immortalized crew cache');
 		rosterFromCrew(rosterEntry, entry.crew);
 	} else {
-		let crew = STTApi.loadFrozenCrew(rosterEntry.symbol);
+		let crew = await STTApi.loadFrozenCrew(rosterEntry.symbol);
 		rosterFromCrew(rosterEntry, crew);
 
 		// We don't need to await, as this is just populating a cache and can be done whenever

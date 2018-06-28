@@ -63,6 +63,10 @@ export async function loginSequence(onProgress: (description: string) => void, l
         }
     }
 
+    onProgress('Analyzing crew...');
+    let roster = await matchCrew(STTApi.playerData.character);
+    STTApi.roster = roster;
+
     if (loadMissions) {
         onProgress('Loading missions and quests...');
 
@@ -78,11 +82,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
             calculateMinimalComplementAsync();
         }));
     }
-
-    onProgress('Analyzing crew...');
-    let roster = await matchCrew(STTApi.playerData.character);
-
-    STTApi.roster = roster;
 
     let total = roster.length * 2 + STTApi.crewAvatars.length;
     let current = 0;
