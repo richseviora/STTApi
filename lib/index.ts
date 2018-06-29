@@ -3,7 +3,7 @@ export { mergeDeep } from './ObjectMerge';
 export { loginSequence } from './LoginSequence';
 export { loadFullTree } from './EquipmentTools';
 export { bestVoyageShip, loadVoyage, startVoyage } from './VoyageTools';
-export { loadGauntlet, gauntletCrewSelection, gauntletRoundOdds, payToGetNewOpponents, payToReviveCrew, playContest, enterGauntlet } from './GauntletTools';
+export { loadGauntlet, gauntletCrewSelection, gauntletRoundOdds, payToGetNewOpponents, payToReviveCrew, playContest, claimRankRewards, enterGauntlet } from './GauntletTools';
 export { ImageCache } from './ImageProvider';
 export { formatCrewStats } from './CrewTools';
 import CONFIG from "./CONFIG";

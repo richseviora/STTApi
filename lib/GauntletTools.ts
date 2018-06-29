@@ -10,31 +10,47 @@ export async function loadGauntlet(): Promise<any> {
 	}
 }
 
+export async function claimRankRewards(gauntlet_id: number): Promise<any> {
+	let data = await STTApi.executeGetRequest("gauntlet/claim_rank_rewards", {gauntlet_id: gauntlet_id});
+	let results = {description: undefined, rewards: undefined};
+	data.forEach((item: any) => {
+		if (item.description) {
+			results.description = item.description;
+		} else if (item.rewards) {
+			results.rewards = item.rewards;
+		}
+	});
+
+	return results;
+}
+
 export async function payToGetNewOpponents(gauntlet_id: number): Promise<any> {
 	let data = await STTApi.executePostRequest("gauntlet/refresh_opp_pool_and_revive_crew", { gauntlet_id: gauntlet_id, pay: true });
 	let currentGauntlet = null;
 	let merits = null;
-	if (data.message) {
-		// TODO: insufficient funds
+	if (!data.message) {
+		data.forEach((item: any) => {
+			if (item.character && item.character.gauntlets) {
+				currentGauntlet = item.character.gauntlets[0];
+			} else if (item.player && item.player.premium_earnable) {
+				// TODO: this should update the global state in STTApi (in fact, these kind of updates can come in at any time and could be handled in the request api itself)
+				merits = item.player.premium_earnable;
+			}
+		});
 	}
-	data.forEach((item: any) => {
-		if (item.character && item.character.gauntlets) {
-			currentGauntlet = item.character.gauntlets[0];
-		} else if (item.player && item.player.premium_earnable) {
-			// TODO: this should update the global state in STTApi (in fact, these kind of updates can come in at any time and could be handled in the request api itself)
-			merits = item.player.premium_earnable;
-		}
-	});
 
 	if (currentGauntlet) {
 		return { gauntlet: currentGauntlet, merits: merits };
+	} else if (data.message) {
+		return { message: data.message };
 	} else {
 		throw new Error("Invalid data for gauntlet!");
 	}
 }
 
-export async function payToReviveCrew(gauntlet_id: number, crew_id: number): Promise<any> {
-	let data = await STTApi.executePostRequest("gauntlet/revive_after_crew_contest_loss", { gauntlet_id: gauntlet_id, save: true, crew_id: crew_id });
+// Save is false if the crew is not disabled yet; true if the crew is disabled already
+export async function payToReviveCrew(gauntlet_id: number, crew_id: number, save: boolean): Promise<any> {
+	let data = await STTApi.executePostRequest("gauntlet/revive_after_crew_contest_loss", { gauntlet_id: gauntlet_id, save: save, crew_id: crew_id });
 	let currentGauntlet = null;
 	if (data.message) {
 		// TODO: error checking
