@@ -6,6 +6,8 @@ export { bestVoyageShip, loadVoyage, startVoyage } from './VoyageTools';
 export { loadGauntlet, gauntletCrewSelection, gauntletRoundOdds, payToGetNewOpponents, payToReviveCrew, playContest, claimRankRewards, enterGauntlet } from './GauntletTools';
 export { ImageCache } from './ImageProvider';
 export { formatCrewStats } from './CrewTools';
+export { bonusCrewForCurrentEvent } from './EventTools';
+export { calculateQuestRecommendations } from './MissionCrewSuccess';
 import CONFIG from "./CONFIG";
 export { CONFIG }
 

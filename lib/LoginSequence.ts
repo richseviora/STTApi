@@ -203,6 +203,34 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     //await Promise.all(iconPromises);
 
+    onProgress('Caching faction images...');
+
+    total += STTApi.playerData.character.factions.length;
+    //current = 0;
+    onProgress('Caching faction images... (' + current + '/' + total + ')');
+    //iconPromises = [];
+    for (let faction of STTApi.playerData.character.factions) {
+        faction.iconUrl = STTApi.imageProvider.getCached(faction);
+
+        if (faction.iconUrl === '') {
+            iconPromises.push(STTApi.imageProvider.getFactionImageUrl(faction, faction.id).then((found: IFoundResult) => {
+                onProgress('Caching faction images... (' + current++ + '/' + total + ')');
+                let faction = STTApi.playerData.character.factions.find((faction: any) => faction.id === found.id);
+                faction.iconUrl = found.url;
+            }).catch((error: any) => { /*console.warn(error);*/ }));
+        } else {
+            // Image is already cached
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching faction images... (' + current++ + '/' + total + ')');
+        }
+    }
+
+    onProgress('Caching faction images... (' + current + '/' + total + ')');
+
+    //await Promise.all(iconPromises);
+
     onProgress('Loading equipment...');
 
     await loadFullTree(onProgress);
