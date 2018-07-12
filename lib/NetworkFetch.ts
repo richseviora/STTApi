@@ -21,7 +21,7 @@ export class NetworkFetch implements NetworkInterface {
 		let response = await window.fetch(uri, {
 			method: "post",
 			headers: headers,
-			body: searchParams
+			body: searchParams.toString()
 		});
 
 		if (getjson) {
