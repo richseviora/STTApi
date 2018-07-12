@@ -1,4 +1,4 @@
-import { parseAssetBundle } from 'ab-parser';
+import { parseAssetBundle } from 'unitiyfs-asset-parser';
 
 function parseFromBundle(data: any): any {
     let assetBundle = parseAssetBundle(new Uint8Array(data.buffer));
