@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "unitiyfs-asset-parser": "latest",
-    "dexie": "latest",
-    "url-search-params-polyfill": "latest"
+    "dexie": "latest"
   }
 }

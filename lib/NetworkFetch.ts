@@ -1,6 +1,5 @@
 // an implemention of NetworkInterface using the native browser fetch functionality
 import { NetworkInterface } from "./NetworkInterface";
-import 'url-search-params-polyfill';
 import CONFIG from "./CONFIG";
 
 export class NetworkFetch implements NetworkInterface {
