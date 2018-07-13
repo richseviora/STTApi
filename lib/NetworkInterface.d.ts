@@ -5,7 +5,7 @@ export interface NetworkInterface {
 	// These methods use an URL proxy (for CORS)
 	get_proxy(uri: string, qs: any) : Promise<any>;
 	post_proxy(uri: string, form: any, bearerToken?: string): Promise<any>;
-	setProxy(urlProxy: string);
+	setProxy(urlProxy: string): void;
 
 	postjson(uri: string, form: any): Promise<any>;
 	getRaw(uri: string, qs: any): Promise<any>;
