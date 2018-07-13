@@ -30,20 +30,6 @@ export class NetworkFetch implements NetworkInterface {
 		}
 	}
 
-	async postjson(uri: string, form: any): Promise<any> {
-		let headers: any = {
-			"Content-type": "application/json"
-		};
-	
-		let response = await window.fetch(uri, {
-			method: "post",
-			headers: headers,
-			body: JSON.stringify(form)
-		});
-	
-		return response.text();
-	}
-
 	async get(uri: string, qs: any): Promise<any> {
 		let searchParams: URLSearchParams = new URLSearchParams();
 		for (const prop of Object.keys(qs)) {
@@ -65,6 +51,42 @@ export class NetworkFetch implements NetworkInterface {
 			let data = await response.text();
 			throw new Error(`Network error; status ${response.status}; reply ${data}.`);
 		}
+	}
+
+	private _urlProxy: string | undefined = undefined;
+
+	setProxy(urlProxy: string) {
+		this._urlProxy = urlProxy;
+	}
+
+	async get_proxy(uri: string, qs: any) : Promise<any> {
+		if (!this._urlProxy) {
+			return this.get(uri, qs);
+		} else {
+			return this.postjson(this._urlProxy, {method: 'get', origURI: uri, qs});
+		}
+	}
+
+	async post_proxy(uri: string, form: any, bearerToken?: string): Promise<any> {
+		if (!this._urlProxy) {
+			return this.post(uri, form, bearerToken);
+		} else {
+			return this.postjson(this._urlProxy, {method: 'post', origURI: uri, form, bearerToken});
+		}
+	}
+
+	async postjson(uri: string, form: any): Promise<any> {
+		let headers: any = {
+			"Content-type": "application/json"
+		};
+	
+		let response = await window.fetch(uri, {
+			method: "post",
+			headers: headers,
+			body: JSON.stringify(form)
+		});
+	
+		return response;
 	}
 
 	async getRaw(uri: string, qs: any): Promise<any> {

@@ -85,6 +85,10 @@ export class STTApiClass {
 		}
 	}
 
+	setImageProviderOverride(iProvider: ImageProvider) {
+		this.imageProvider = iProvider;
+	}
+
 	get networkHelper(): NetworkInterface {
 		return this._net;
 	}
@@ -150,7 +154,7 @@ export class STTApiClass {
 	}
 
 	async login(username: string, password: string, autoLogin: boolean): Promise<any> {
-		let data = await this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
+		let data = await this._net.post_proxy(CONFIG.URL_PLATFORM + "oauth2/token", {
 			"username": username,
 			"password": password,
 			"client_id": CONFIG.CLIENT_ID,
@@ -200,7 +204,7 @@ export class STTApiClass {
 	}
 
 	async loginWithFacebook(facebookAccessToken: string, facebookUserId: string, autoLogin: boolean): Promise<any> {
-		let data = await this._net.post(CONFIG.URL_PLATFORM + "oauth2/token", {
+		let data = await this._net.post_proxy(CONFIG.URL_PLATFORM + "oauth2/token", {
 			"third_party.third_party": "facebook",
 			"third_party.access_token": facebookAccessToken,
 			"third_party.uid": facebookUserId,
@@ -222,7 +226,7 @@ export class STTApiClass {
 			throw new Error("Not logged in!");
 		}
 
-		return this._net.get(CONFIG.URL_SERVER + resourceUrl,
+		return this._net.get_proxy(CONFIG.URL_SERVER + resourceUrl,
 			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs));
 	}
 
@@ -231,7 +235,7 @@ export class STTApiClass {
 			throw new Error("Not logged in!");
 		}
 
-		return this._net.post(CONFIG.URL_SERVER + resourceUrl,
+		return this._net.post_proxy(CONFIG.URL_SERVER + resourceUrl,
 			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION }, qs),
 			this._accessToken
 		);
