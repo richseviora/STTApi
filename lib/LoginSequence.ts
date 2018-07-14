@@ -231,9 +231,11 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     //await Promise.all(iconPromises);
 
-    onProgress('Loading equipment...');
+    if (!STTApi.inWebMode) {
+        onProgress('Loading equipment...');
 
-    await loadFullTree(onProgress);
+        await loadFullTree(onProgress);
+    }
 
     onProgress('Caching images...');
 

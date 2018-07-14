@@ -13,11 +13,10 @@ export async function loadFullTree(onProgress: (description: string) => void): P
         
     if (entry) {
         // Merge the cached equipment, since the recipe tree didn't change since our last load
-        let mapIds = new Set(STTApi.itemArchetypeCache.archetypes.map((mapObj: any) => mapObj.id));
-
         entry.archetypeCache.forEach((cacheEntry: any) => {
-            if (!mapIds.has(cacheEntry.id)) {
+            if (!mapEquipment.has(cacheEntry.id)) {
                 STTApi.itemArchetypeCache.archetypes.push(cacheEntry);
+                mapEquipment.add(cacheEntry.id);
             }
         });
     }
@@ -43,7 +42,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     });
 
     onProgress(`Loading equipment... (${missingEquipment.length} remaining)`);
-    if (missingEquipment.length == 0) {
+    if (missingEquipment.length === 0) {
         // We're done loading, let's cache the current list, to save on future loading time
         /*await*/ STTApi.equipmentCache.put({
             digest: STTApi.serverConfig.config.craft_config.recipe_tree.digest,

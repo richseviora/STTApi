@@ -46,11 +46,14 @@ export class STTApiClass {
 	public missionSuccess!: IChallengeSuccess[];
 	public minimalComplement?: MinimalComplement;
 	public imageProvider! : ImageProvider;
+	public inWebMode: boolean;
 
 	constructor() {
 		this.refreshEverything(true);
 
 		this._net = new NetworkFetch();
+
+		this.inWebMode = false;
 
 		// TODO: Dexie uses IndexedDB, so doesn't work in plain node.js without polyfill - should the caching be an interface?
 		this._cache = new DexieCache("sttcache");
