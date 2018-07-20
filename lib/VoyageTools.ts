@@ -56,6 +56,24 @@ export async function resolveDilemma(voyageId: number, dilemmaId: number, index:
 }
 
 export async function startVoyage(voyageSymbol: string, shipId: number, shipName: string, selectedCrewIds: Array<number>): Promise<void> {
+    // Start by getting up-to-date crew status
+    let currentPlayer = await STTApi.resyncInventory();
+    
+    let availableCrew = new Set<number>();
+    currentPlayer.player.character.crew.forEach((crew: any) => {
+        if (!crew.active_id) {
+            availableCrew.add(crew.id);
+        }
+    });
+
+    // Validate all selected crew is available and not already active
+    selectedCrewIds.forEach(crewid => {
+        if (!availableCrew.has(crewid)) {
+            let crew = STTApi.roster.find((crew: any) => (crew.crew_id === crewid))
+            throw new Error(`Cannot send '${crew ? crew.name : crewid}' out on a voyage because it's already active! Please DO NOT use this tool at the same time as the game on any platform. Close all game clients then close and restart the tool to try again!`);
+        }
+    });
+
     let data = await STTApi.executePostRequest("voyage/start", {
         voyage_symbol: voyageSymbol,
         ship_id: shipId,

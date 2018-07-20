@@ -280,10 +280,19 @@ export class STTApiClass {
 
 	async resyncPlayerCurrencyData(): Promise<any> {
 		// this code reloads minimal stuff to update the player information and merge things back in
-		// "player/resync_inventory" is more heavy-handed and has the potential to overwrite some stuff we added on like images, but can also bring in any new items, crew or ships
 		let data = await this.executeGetRequest("player/resync_currency");
 		if (data.player) {
 			this._playerData.player = mergeDeep(this._playerData.player, data.player);
+		} else {
+			throw new Error("Invalid data for player!");
+		}
+	}
+
+	async resyncInventory(): Promise<any> {
+		// TODO: we should sync this data back into _playerData.player somehow (but we're adding too much stuff onto it now to work, like iconUrls, immortals, etc.)
+		let data = await this.executeGetRequest("player/resync_inventory");
+		if (data.player) {
+			return data;
 		} else {
 			throw new Error("Invalid data for player!");
 		}
