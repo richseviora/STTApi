@@ -101,6 +101,12 @@ export async function matchCrew(character: any): Promise<any> {
 		await Promise.all(frozenPromises);
 	}
 
+	for (let crew of roster) {
+		// Populate default icons (if they're already cached)
+		crew.iconUrl = STTApi.imageProvider.getCrewCached(crew, false);
+		crew.iconBodyUrl = STTApi.imageProvider.getCrewCached(crew, true);
+	}
+
 	return roster;
 }
 

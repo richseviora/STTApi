@@ -88,7 +88,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
     onProgress('Caching crew images... (' + current + '/' + total + ')');
 
     for (let crew of roster) {
-        crew.iconUrl = STTApi.imageProvider.getCrewCached(crew, false);
         if (crew.iconUrl === '') {
             iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, false, crew.id).then((found: IFoundResult) => {
                 onProgress('Caching crew images... (' + current++ + '/' + total + ')');
@@ -103,7 +102,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
             //onProgress('Caching crew images... (' + current++ + '/' + total + ')');
         }
 
-        crew.iconBodyUrl = STTApi.imageProvider.getCrewCached(crew, true);
         if (crew.iconBodyUrl === '') {
             iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, true, crew.id).then((found: IFoundResult) => {
                 onProgress('Caching crew images... (' + current++ + '/' + total + ')');

@@ -19,6 +19,7 @@ import { NetworkInterface } from "./NetworkInterface";
 import { NetworkFetch } from "./NetworkFetch";
 import { DexieCache, QuestsTable, EquipmentTable, ImmortalsTable, ConfigTable, WikiImageTable } from "./Cache";
 import { IChallengeSuccess } from './MissionCrewSuccess';
+import { matchCrew } from './CrewTools';
 import { MinimalComplement } from "./MinimalComplement";
 import { mergeDeep } from './ObjectMerge';
 import { ImageProvider, ImageCache } from './ImageProvider';
@@ -365,7 +366,12 @@ export class STTApiClass {
 		return this._net.get(CONFIG.URL_GITHUBRELEASES, {});
 	}
 
-	async applyUpdates(data: any): Promise<any> {
+	async refreshRoster(): Promise<any> {
+		// TODO: need to reload icon urls as well
+		this.roster = await matchCrew(this._playerData.player.character);
+	}
+
+	private async applyUpdates(data: any): Promise<any> {
 		if (!data) {
 			return;
 		}
