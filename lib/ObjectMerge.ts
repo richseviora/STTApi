@@ -11,6 +11,24 @@ export function mergeDeep(target: any, ...sources: any[]): void {
             if (isObject(source[key])) {
                 if (!target[key]) Object.assign(target, { [key]: {} });
                 mergeDeep(target[key], source[key]);
+            } else if (Array.isArray(source[key])) {
+                if (!target[key]) {
+                    Object.assign(target, { [key]: source[key] });
+                } else {
+                    // For arrays, we need to look at ids
+                    source[key].forEach((element: any) => {
+                        if (!element.id) {
+                            target[key].push(element);
+                        } else {
+                            let current = target[key].find((it: any) => it.id === element.id);
+                            if (current) {
+                                mergeDeep(current, element);
+                            } else {
+                                target[key].push(element);
+                            }
+                        }
+                    });
+                }
             } else {
                 Object.assign(target, { [key]: source[key] });
             }

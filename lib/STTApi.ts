@@ -316,6 +316,15 @@ export class STTApiClass {
 		}
 	}
 
+	async sellCrew(id: number): Promise<any> {
+		let data = await this.executePostRequest("crew/sell", { id: id });
+		if (data) {
+			return this.applyUpdates(data);
+		} else {
+			throw new Error("Invalid data for frozen crew!");
+		}
+	}
+
 	async loadFleetMemberInfo(guildId: string): Promise<any> {
 		let data = await this.executePostRequest("fleet/complete_member_info", { guild_id: guildId });
 		if (data) {
@@ -354,5 +363,36 @@ export class STTApiClass {
 
 	getGithubReleases(): Promise<any> {
 		return this._net.get(CONFIG.URL_GITHUBRELEASES, {});
+	}
+
+	async applyUpdates(data: any): Promise<any> {
+		if (!data) {
+			return;
+		}
+
+		if (Array.isArray(data)) {
+			for(let val of data) {
+				await this.applyUpdates(val);
+			}
+		} else {
+			if (!data.action) {
+				console.log(`Not sure what message this is; should we be updating something: '${data}'`)
+				return;
+			}
+
+			if (data.action === 'update') {
+				if (data.player) {
+					this._playerData.player = mergeDeep(this._playerData.player, data.player);
+				}
+
+				if (data.character) {
+					this._playerData.player.character = mergeDeep(this._playerData.player.character, data.character);
+				}
+			} else if (data.action === 'delete') {
+				// TODO
+				// For example, data.character.items, array with objects with just the id property in them
+
+			}
+		}
 	}
 }
