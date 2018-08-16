@@ -276,8 +276,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
             iconPromises.push(STTApi.imageProvider.getSprite(CONFIG.SPRITES[sprite].asset, sprite, sprite).then((found: IFoundResult) => {
                 onProgress('Caching misc images... (' + current++ + '/' + total + ')');
                 CONFIG.SPRITES[found.id].url = found.url;
-
-                return Promise.resolve();
             }).catch((error: any) => { /*console.warn(error);*/ }));
         } else {
             // Image is already cached

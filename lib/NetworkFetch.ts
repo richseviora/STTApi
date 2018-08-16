@@ -123,7 +123,7 @@ export class NetworkFetch implements NetworkInterface {
 			let getAllData = async (): Promise<any> => {
 				let result = await reader.read();
 				if (!result.done) {
-					buffers.push(Buffer.alloc(result.value));
+					buffers.push(new Buffer(result.value));
 					return getAllData();
 				}
 
