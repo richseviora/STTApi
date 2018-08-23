@@ -63,7 +63,7 @@ export class NetworkFetch implements NetworkInterface {
 		if (!this._urlProxy) {
 			return this.get(uri, qs);
 		} else {
-			let response = await this.postjson(this._urlProxy, {method: 'get', origURI: uri, qs});
+			let response = await this.postjson(this._urlProxy + '/get', {origURI: uri, qs});
 
 			if (response.ok) {
 				return response.json();
@@ -78,7 +78,7 @@ export class NetworkFetch implements NetworkInterface {
 		if (!this._urlProxy) {
 			return this.post(uri, form, bearerToken);
 		} else {
-			let response = await this.postjson(this._urlProxy, {method: 'post', origURI: uri, form, bearerToken});
+			let response = await this.postjson(this._urlProxy + '/post', {origURI: uri, form, bearerToken});
 
 			if (response.ok) {
 				return response.json();
