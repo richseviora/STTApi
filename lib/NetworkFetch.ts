@@ -23,10 +23,15 @@ export class NetworkFetch implements NetworkInterface {
 			body: searchParams.toString()
 		});
 
-		if (getjson) {
-			return response.json();
+		if (response.ok) {
+			if (getjson) {
+				return response.json();
+			} else {
+				return response.text();
+			}
 		} else {
-			return response.text();
+			let data = await response.text();
+			throw new Error(`Network error; status ${response.status}; reply ${data}.`);
 		}
 	}
 
