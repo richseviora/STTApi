@@ -60,7 +60,7 @@ export class STTApiClass {
 		this._cache = new DexieCache("sttcache");
 	}
 
-	refreshEverything(logout: boolean) {
+	async refreshEverything(logout: boolean) {
 		this.crewAvatars = null;
 		this.serverConfig = null;
 		this._playerData = null;
@@ -77,6 +77,13 @@ export class STTApiClass {
 
 		if (logout) {
 			this._accessToken = undefined;
+
+			if (this._cache) {
+				let entry = await this._cache.config.where('key').equals('autoLogin').first();
+				if (!entry || entry.value === false) {
+					await this._cache.config.where('key').equals('accessToken').delete();
+				}
+			}
 		}
 	}
 
