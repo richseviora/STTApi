@@ -8,6 +8,7 @@ export { ImageCache } from './ImageProvider';
 export { formatCrewStats } from './CrewTools';
 export { bonusCrewForCurrentEvent } from './EventTools';
 export { calculateQuestRecommendations } from './MissionCrewSuccess';
+export { formatTimeSeconds } from './MiscTools';
 import CONFIG from "./CONFIG";
 export { CONFIG }
 
