@@ -79,6 +79,40 @@ export default class CONFIG {
 		8: 'Increase boarding damage by %VAL%%'
 	};
 
+	static readonly REWARDS_ITEM_TYPE: { [index: number]: string } = {
+		0: 'None',
+		1: 'Crew',
+		2: 'Equipment',
+		3: 'Component',
+		4: 'Shuttle consumable',
+		5: 'Ship part',
+		6: 'Shuttle token',
+		7: 'Crew experience training',
+		8: 'Ship schematic',
+		9: 'Replicator ration',
+		10: 'Honorable citation',
+		11: 'Buff',
+		12: 'Starbase component',
+		13: 'Voyage consumable'
+	};
+
+	static readonly REWARDS_TYPE: { [index: number]: string } = {
+		0: 'Generic loot', // ?
+		1: 'Crew',
+		2: 'Item',
+		3: 'Currency',
+		4: 'Faction',
+		5: 'Dispute',
+		6: 'Pack',
+		7: 'Ship',
+		8: 'Schematic',
+		9: 'Conflict energy',
+		10: 'Bundle',
+		11: 'Event',
+		12: 'Stimpack grant',
+		13: 'Useful loot'  // ?
+	};
+
 	static SPRITES: { [index: string]: { asset: string, url: string|undefined } } = {
 		'mastery_highest_icon': { asset: 'atlas_stt_icons', url: undefined },
 		'mastery_medium_icon': { asset: 'atlas_stt_icons', url: undefined },
