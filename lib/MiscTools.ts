@@ -1,4 +1,4 @@
-export function formatTimeSeconds(seconds: number): string {
+export function formatTimeSeconds(seconds: number, showSeconds: boolean = false): string {
     let h = Math.floor(seconds / 3600);
     let d = Math.floor(h / 24);
     h = h - d*24;
@@ -8,5 +8,9 @@ export function formatTimeSeconds(seconds: number): string {
     let hDisplay = h > 0 ? (h + 'H ') : '';
     let mDisplay = m > 0 ? (m + 'M ') : '';
     let sDisplay = s > 0 ? (s + 'S') : '';
-    return dDisplay + hDisplay + mDisplay + sDisplay;
+    if (showSeconds || (seconds < 60)) {
+        return dDisplay + hDisplay + mDisplay + sDisplay;
+    } else {
+        return dDisplay + hDisplay + mDisplay.trimRight();
+    }
 }
