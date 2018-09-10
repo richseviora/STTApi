@@ -32,11 +32,11 @@ export class STTApiClass {
 	private _accessToken: string | undefined;
 	private _net: NetworkInterface;
 	private _playerData: any;
-	private _platformConfig: any;
 	private _starbaseData: any;
 	private _fleetMemberInfo: any;
 	private _cache: DexieCache;
 
+	public platformConfig: any;
 	public crewAvatars: any;
 	public serverConfig: any;
 	public shipSchematics: any;
@@ -64,7 +64,7 @@ export class STTApiClass {
 		this.crewAvatars = null;
 		this.serverConfig = null;
 		this._playerData = null;
-		this._platformConfig = null;
+		this.platformConfig = null;
 		this.shipSchematics = null;
 		this._starbaseData = null;
 		this.fleetData = null;
@@ -149,11 +149,11 @@ export class STTApiClass {
 	}
 
 	getTraitName(trait: string): string {
-		return this._platformConfig.config.trait_names[trait] ? this._platformConfig.config.trait_names[trait] : trait;
+		return this.platformConfig.config.trait_names[trait] ? this.platformConfig.config.trait_names[trait] : trait;
 	}
 
 	getShipTraitName(trait: string): string {
-		return this._platformConfig.config.ship_trait_names[trait] ? this._platformConfig.config.ship_trait_names[trait] : trait;
+		return this.platformConfig.config.ship_trait_names[trait] ? this.platformConfig.config.ship_trait_names[trait] : trait;
 	}
 
 	getCrewAvatarById(id: number): any {
@@ -274,7 +274,7 @@ export class STTApiClass {
 
 	async loadPlatformConfig(): Promise<any> {
 		let data = await this.executeGetRequest("config/platform");
-		this._platformConfig = data;
+		this.platformConfig = data;
 	}
 
 	async loadPlayerData(): Promise<any> {

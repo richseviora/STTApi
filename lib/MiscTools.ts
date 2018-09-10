@@ -4,13 +4,24 @@ export function formatTimeSeconds(seconds: number, showSeconds: boolean = false)
     h = h - d*24;
     let m = Math.floor(seconds % 3600 / 60);
     let s = Math.floor(seconds % 3600 % 60);
-    let dDisplay = d > 0 ? (d + 'D ') : '';
-    let hDisplay = h > 0 ? (h + 'H ') : '';
-    let mDisplay = m > 0 ? (m + 'M ') : '';
-    let sDisplay = s > 0 ? (s + 'S') : '';
-    if (showSeconds || (seconds < 60)) {
-        return dDisplay + hDisplay + mDisplay + sDisplay;
-    } else {
-        return dDisplay + hDisplay + mDisplay.trimRight();
+
+    let parts = [];
+
+    if (d > 0) {
+        parts.push(d + 'D');
     }
+
+    if (h > 0) {
+        parts.push(h + 'H');
+    }
+
+    if (m > 0) {
+        parts.push(m + 'M');
+    }
+
+    if ((s > 0) && (showSeconds || (seconds < 60))) {
+        parts.push(s + 'S');
+    }
+
+    return parts.join(' ');
 }

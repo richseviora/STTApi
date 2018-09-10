@@ -153,7 +153,7 @@ export interface IGauntletRoundOdds {
     matches: IMatch[];
 }
 
-export function gauntletRoundOdds(currentGauntlet: any): IGauntletRoundOdds {
+export function gauntletRoundOdds(currentGauntlet: any, simulatedRounds: number): IGauntletRoundOdds {
 	let result: IGauntletRoundOdds = {
 		rank: currentGauntlet.rank,
 		consecutive_wins: currentGauntlet.consecutive_wins,
@@ -234,8 +234,6 @@ export function gauntletRoundOdds(currentGauntlet: any): IGauntletRoundOdds {
 	result.crewOdds.forEach((crewOdd: any) => {
 		result.opponents.forEach((opponent: any) => {
 			// TODO: this is silly; perhaps someone more statisitically-inclined can chime in with a proper probabilistic formula
-
-			var simulatedRounds = 20000;
 			var wins = 0;
 			for (var i = 0; i < simulatedRounds; i++) {
 				var totalCrew = roll(crewOdd, 0);
