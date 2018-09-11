@@ -55,7 +55,7 @@ export async function resolveDilemma(voyageId: number, dilemmaId: number, index:
     }
 }
 
-export async function startVoyage(voyageSymbol: string, shipId: number, shipName: string, selectedCrewIds: Array<number>): Promise<void> {
+export async function startVoyage(voyageSymbol: string, shipId: number, shipName: string | undefined, selectedCrewIds: Array<number>): Promise<void> {
     // Start by getting up-to-date crew status
     let currentPlayer = await STTApi.resyncInventory();
     
@@ -74,12 +74,17 @@ export async function startVoyage(voyageSymbol: string, shipId: number, shipName
         }
     });
 
-    let data = await STTApi.executePostRequest("voyage/start", {
+    let params: any = {
         voyage_symbol: voyageSymbol,
         ship_id: shipId,
         crew_ids_string: selectedCrewIds.join(','),
-        ship_name: shipName
-    });
+    };
+
+    if (shipName !== undefined) {
+        params.ship_name = shipName;
+    }
+
+    let data = await STTApi.executePostRequest("voyage/start", params);
 
     if (data) {
         //console.info("Started voyage");
