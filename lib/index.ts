@@ -9,6 +9,7 @@ export { formatCrewStats } from './CrewTools';
 export { bonusCrewForCurrentEvent } from './EventTools';
 export { calculateQuestRecommendations } from './MissionCrewSuccess';
 export { formatTimeSeconds } from './MiscTools';
+export { replicatorCurrencyCost, replicatorFuelCost, canReplicate, replicatorFuelValue, canUseAsFuel, replicate } from './ReplicatorTools';
 import CONFIG from "./CONFIG";
 export { CONFIG }
 
