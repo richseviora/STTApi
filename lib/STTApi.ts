@@ -378,7 +378,7 @@ export class STTApiClass {
 		this.roster = await matchCrew(this._playerData.player.character);
 	}
 
-	private async applyUpdates(data: any): Promise<any> {
+	async applyUpdates(data: any): Promise<any> {
 		if (!data) {
 			return;
 		}

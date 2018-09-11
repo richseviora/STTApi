@@ -23,5 +23,9 @@ export function formatTimeSeconds(seconds: number, showSeconds: boolean = false)
         parts.push(s + 'S');
     }
 
-    return parts.join(' ');
+    if (parts.length === 0) {
+        return '0S';
+    } else {
+        return parts.join(' ');
+    }
 }

@@ -34,12 +34,12 @@ export async function replicate(targetArchetypeId: number, fuel: ReplicatorFuel[
 
     // TODO: figure out how these are formatted
     fuel.forEach(f => {
-        params[f.archetype_id] = f.quantity;
+        params[`fuels[${f.archetype_id}]`] = f.quantity;
     });
 
     let data = await STTApi.executePostRequest("item/replicate", params);
 
-    // TODO: error checking
+    await STTApi.applyUpdates(data);
 
-    return data;
+    return;
 }
