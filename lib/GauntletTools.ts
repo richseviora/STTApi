@@ -319,7 +319,7 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any, feature
 			skills: {}
 		};
 
-		for (var skill in CONFIG.SKILLS) {
+		for (let skill in CONFIG.SKILLS) {
 			newCrew.skills[skill] = crew[skill].min + crew[skill].max;
 		}
 
@@ -330,7 +330,7 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any, feature
 				newCrew.crit += currentGauntlet.contest_data.crit_chance_per_trait;
 		});
 
-		for (var skill in CONFIG.SKILLS) {
+		for (let skill in CONFIG.SKILLS) {
 			newCrew.skills[skill] = newCrew.skills[skill] * (100 + newCrew.crit / critBonusDivider) / 100;
 		}
 
@@ -340,9 +340,9 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any, feature
 	let sortedCrew: ISortedCrew[] = [];
 
 	function getScore(gauntletCrewItem: IGauntletCrew, maxSkill: any): number {
-		var score = gauntletCrewItem.skills[maxSkill]; // double account for preferred skill
+		let score = gauntletCrewItem.skills[maxSkill]; // double account for preferred skill
 
-		for (var skill in CONFIG.SKILLS) {
+		for (let skill in CONFIG.SKILLS) {
 			score += gauntletCrewItem.skills[skill];
 		}
 
@@ -351,7 +351,7 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any, feature
 
 	let result: IGauntletCrewSelection = { best: {}, recommendations: [] };
 
-	for (var skill in CONFIG.SKILLS) {
+	for (let skill in CONFIG.SKILLS) {
 		gauntletCrew.sort((a: any, b: any) => {
 			return b.skills[skill] - a.skills[skill];
 		});

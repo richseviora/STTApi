@@ -15,14 +15,14 @@ export function bonusCrewForCurrentEvent(): BonusCrew | undefined {
         let eventCrew: { [index: string]: any } = {};
         if (activeEvent.content) {
             if (activeEvent.content.crew_bonuses) {
-                for (var symbol in activeEvent.content.crew_bonuses) {
+                for (let symbol in activeEvent.content.crew_bonuses) {
                     eventCrew[symbol] = activeEvent.content.crew_bonuses[symbol];
                 }
             }
 
             // For skirmish events
             if (activeEvent.content.bonus_crew) {
-                for (var symbol in activeEvent.content.bonus_crew) {
+                for (let symbol in activeEvent.content.bonus_crew) {
                     eventCrew[symbol] = activeEvent.content.bonus_crew[symbol];
                 }
             }
@@ -37,14 +37,14 @@ export function bonusCrewForCurrentEvent(): BonusCrew | undefined {
             // TODO: there's also bonus_traits; should we bother selecting crew with those? It looks like you can use voyage crew in skirmish events, so it probably doesn't matter
             if (activeEvent.content.shuttles) {
                 activeEvent.content.shuttles.forEach((shuttle: any) => {
-                    for (var symbol in shuttle.crew_bonuses) {
+                    for (let symbol in shuttle.crew_bonuses) {
                         eventCrew[symbol] = shuttle.crew_bonuses[symbol];
                     }
                 });
             }
         }
 
-        for (var symbol in eventCrew) {
+        for (let symbol in eventCrew) {
             let foundCrew = STTApi.roster.find((crew: any) => crew.symbol === symbol);
             if (foundCrew) {
                 result.crewIds.push(foundCrew.crew_id || foundCrew.id);

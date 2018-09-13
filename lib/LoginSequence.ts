@@ -270,7 +270,7 @@ export async function loginSequence(onProgress: (description: string) => void, l
     //current = 0;
     onProgress('Caching misc images... (' + current + '/' + total + ')');
     //iconPromises = [];
-    for (var sprite in CONFIG.SPRITES) {
+    for (let sprite in CONFIG.SPRITES) {
         CONFIG.SPRITES[sprite].url = STTApi.imageProvider.getSpriteCached(CONFIG.SPRITES[sprite].asset, sprite);
         if (CONFIG.SPRITES[sprite].url === '') {
             iconPromises.push(STTApi.imageProvider.getSprite(CONFIG.SPRITES[sprite].asset, sprite, sprite).then((found: IFoundResult) => {

@@ -68,7 +68,7 @@ export interface IMissionData {
 }
 
 export async function loadMissionData(accepted_missions: any, dispute_histories: any): Promise<IMissionData[]> {
-	var mission_ids: any[] = [];
+	let mission_ids: any[] = [];
 
 	accepted_missions.forEach((mission: any) => {
 		if (mission.symbol !== 'mission_npev2') {

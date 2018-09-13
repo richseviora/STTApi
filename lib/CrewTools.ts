@@ -9,7 +9,7 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 	rosterEntry.crew_id = crew.id;
 	rosterEntry.active_id = crew.active_id;
 
-	for (var skill in crew.skills) {
+	for (let skill in crew.skills) {
 		rosterEntry[skill].core = crew.skills[skill].core;
 		rosterEntry[skill].min = crew.skills[skill].range_min;
 		rosterEntry[skill].max = crew.skills[skill].range_max;
@@ -49,7 +49,7 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 
 export async function matchCrew(character: any): Promise<any> {
 	function getDefaults(id: number): any {
-		var crew = STTApi.getCrewAvatarById(id);
+		let crew = STTApi.getCrewAvatarById(id);
 		if (!crew) {
 			return undefined;
 		}
@@ -138,7 +138,7 @@ export function formatCrewStats(crew: any): string {
 	};
 
 	let result = '';
-	for (var skillName in CONFIG.SKILLS) {
+	for (let skillName in CONFIG.SKILLS) {
 		let skill = crew[skillName];
 		
 		if (skill.core && (skill.core > 0)) {

@@ -99,12 +99,12 @@ export function calculateMissionCrewSuccess(): Array<IChallengeSuccess> {
                         }
 
                         // Compute roll for crew
-                        var rollCrew = crew[entry.skill].core;
+                        let rollCrew = crew[entry.skill].core;
 
                         // If crew doesn't have a skill, its default value is lowest_skill / 5
                         if (rollCrew == 0) {
-                            var lowestSkill = 99999;
-                            for (var skill in CONFIG.SKILLS) {
+                            let lowestSkill = 99999;
+                            for (let skill in CONFIG.SKILLS) {
                                 if ((crew[skill].core > 0) && (lowestSkill > crew[skill].core)) {
                                     lowestSkill = crew[skill].core
                                 }
@@ -263,7 +263,7 @@ export function calculateQuestRecommendations(questId: number, loadEvenFinishedN
         let totalSuccess = (crewSelection: IChallengeSuccessCrew[]) => {
             let min = crewSelection[0].success;
             let total = crewSelection[0].success;
-            for (var i = 1; i < crewSelection.length; i++) {
+            for (let i = 1; i < crewSelection.length; i++) {
                 if (crewSelection[i].crew.id == crewSelection[i - 1].crew.id) {
                     // If crew is used on consecutive nodes, it gets -20% to skill rating
                     let skill = nodeElem[path[i]].skill;

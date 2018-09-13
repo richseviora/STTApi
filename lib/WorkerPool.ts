@@ -44,7 +44,7 @@ export class WorkerPool {
         this.workerQueue = new Array<WorkerThread>();
         this.taskQueue = new Array<WorkerTask>();
 
-        for (var i = 0; i < size; i++) {
+        for (let i = 0; i < size; i++) {
             this.workerQueue.push(new WorkerThread(this));
         }
     }

@@ -23,7 +23,7 @@
   "homepage": "https://github.com/IAmPicard/STTApi#readme",
   "devDependencies": {
     "@types/node": "latest",
-    "copyfiles": "latest",
+    "copyfiles": "^2.1.0",
     "typescript": "^3.0.3"
   },
   "dependencies": {

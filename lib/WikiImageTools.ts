@@ -60,7 +60,7 @@ export class WikiImageProvider implements ImageProvider {
 	}
 
 	getItemImageUrl(item: any, id: any): Promise<IFoundResult> {
-		var fileName = item.name + CONFIG.RARITIES[item.rarity].name + '.png';
+		let fileName = item.name + CONFIG.RARITIES[item.rarity].name + '.png';
 		fileName = fileName.split(' ').join('').split('\'').join('');
 		return getWikiImageUrl(fileName, id);
 	}
