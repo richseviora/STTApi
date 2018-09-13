@@ -2,7 +2,7 @@ import STTApi from "./index";
 import CONFIG from "./CONFIG";
 
 export async function loadGauntlet(): Promise<any> {
-	let data = await STTApi.executeGetRequest("gauntlet/status", {gauntlet_id: -1});
+	let data = await STTApi.executeGetRequest("gauntlet/status", { gauntlet_id: -1 });
 	if (data.character && data.character.gauntlets) {
 		return data.character.gauntlets[0];
 	} else {
@@ -11,8 +11,8 @@ export async function loadGauntlet(): Promise<any> {
 }
 
 export async function claimRankRewards(gauntlet_id: number): Promise<any> {
-	let data = await STTApi.executeGetRequest("gauntlet/claim_rank_rewards", {gauntlet_id: gauntlet_id});
-	let results = {description: undefined, rewards: undefined};
+	let data = await STTApi.executeGetRequest("gauntlet/claim_rank_rewards", { gauntlet_id: gauntlet_id });
+	let results = { description: undefined, rewards: undefined };
 	data.forEach((item: any) => {
 		if (item.description) {
 			results.description = item.description;
@@ -102,11 +102,11 @@ export async function playContest(gauntlet_id: number, crew_id: number, opponent
 export async function enterGauntlet(gauntletId: number, crewIds: Array<number>): Promise<void> {
 	let data = await STTApi.executePostRequest("gauntlet/enter_crew_contest_gauntlet", {
 		gauntlet_id: gauntletId,
-		crew1_id:crewIds[0],
-		crew2_id:crewIds[1],
-		crew3_id:crewIds[2],
-		crew4_id:crewIds[3],
-		crew5_id:crewIds[4]
+		crew1_id: crewIds[0],
+		crew2_id: crewIds[1],
+		crew3_id: crewIds[2],
+		crew4_id: crewIds[3],
+		crew5_id: crewIds[4]
 	});
 
 	if (data && data.character && data.character.gauntlets) {
@@ -117,40 +117,40 @@ export async function enterGauntlet(gauntletId: number, crewIds: Array<number>):
 }
 
 export interface ICrewOdd {
-    archetype_symbol: string;
-    crew_id: number;
-    crit_chance: number;
-    used: number;
-    max: number[];
+	archetype_symbol: string;
+	crew_id: number;
+	crit_chance: number;
+	used: number;
+	max: number[];
 	min: number[];
-    iconUrl: string | undefined;
+	iconUrl: string | undefined;
 }
 
 export interface IOpponentOdd {
-    name: string;
-    level: number;
-    value: number;
-    player_id: number;
-    crew_id: number;
-    archetype_symbol: string;
-    crit_chance: number;
-    iconUrl: string | undefined;
-    max: number[];
+	name: string;
+	level: number;
+	value: number;
+	player_id: number;
+	crew_id: number;
+	archetype_symbol: string;
+	crit_chance: number;
+	iconUrl: string | undefined;
+	max: number[];
 	min: number[];
 }
 
 export interface IMatch {
-    crewOdd: ICrewOdd;
-    opponent: IOpponentOdd;
-    chance: number;
+	crewOdd: ICrewOdd;
+	opponent: IOpponentOdd;
+	chance: number;
 }
 
 export interface IGauntletRoundOdds {
-    rank: number;
-    consecutive_wins: number;
-    crewOdds: ICrewOdd[];
-    opponents: IOpponentOdd[];
-    matches: IMatch[];
+	rank: number;
+	consecutive_wins: number;
+	crewOdds: ICrewOdd[];
+	opponents: IOpponentOdd[];
+	matches: IMatch[];
 }
 
 export function gauntletRoundOdds(currentGauntlet: any, simulatedRounds: number): IGauntletRoundOdds {
@@ -158,8 +158,8 @@ export function gauntletRoundOdds(currentGauntlet: any, simulatedRounds: number)
 		rank: currentGauntlet.rank,
 		consecutive_wins: currentGauntlet.consecutive_wins,
 		crewOdds: [],
-        opponents: [],
-        matches: []
+		opponents: [],
+		matches: []
 	};
 
 	currentGauntlet.contest_data.selected_crew.forEach((crew: any) => {
@@ -217,11 +217,10 @@ export function gauntletRoundOdds(currentGauntlet: any, simulatedRounds: number)
 		result.opponents.push(opponentOdd);
 	});
 
-	function roll(data: any, skillIndex: number): number {
+	const roll = (data: any, skillIndex: number): number => {
 		let max = (Math.random() < 0.5) ? 0 : 1;
 		let min = (Math.random() < 0.5) ? 0 : 1;
-		if (data.min[skillIndex] > 0)
-		{
+		if (data.min[skillIndex] > 0) {
 			max = data.max[skillIndex];
 			min = data.min[skillIndex];
 		}
@@ -233,38 +232,52 @@ export function gauntletRoundOdds(currentGauntlet: any, simulatedRounds: number)
 
 	result.crewOdds.forEach((crewOdd: any) => {
 		result.opponents.forEach((opponent: any) => {
-			// TODO: this is silly; perhaps someone more statisitically-inclined can chime in with a proper probabilistic formula
-			var wins = 0;
-			for (var i = 0; i < simulatedRounds; i++) {
-				var totalCrew = roll(crewOdd, 0);
-				totalCrew += roll(crewOdd, 0);
-				totalCrew += roll(crewOdd, 0);
-				totalCrew += roll(crewOdd, 1);
-				totalCrew += roll(crewOdd, 1);
-				totalCrew += roll(crewOdd, 1);
+			if ((crewOdd.max[0] + crewOdd.max[1]) * 2 < (opponent.min[0] + opponent.min[1])) {
+				// If there is 0 chance of winning, bail early and don't waste time
+				result.matches.push({
+					crewOdd: crewOdd,
+					opponent: opponent,
+					chance: 0
+				});
+			} else if ((opponent.max[0] + opponent.max[1]) * 2 < (crewOdd.min[0] + crewOdd.min[1])) {
+				// If there is 100 chance of winning, bail early and don't waste time
+				result.matches.push({
+					crewOdd: crewOdd,
+					opponent: opponent,
+					chance: 100
+				});
+			} else {
+				// TODO: this is silly; perhaps someone more statisitically-inclined can chime in with a proper probabilistic formula
+				let wins = 0;
+				for (let i = 0; i < simulatedRounds; i++) {
+					let totalCrew = roll(crewOdd, 0);
+					totalCrew += roll(crewOdd, 0);
+					totalCrew += roll(crewOdd, 0);
+					totalCrew += roll(crewOdd, 1);
+					totalCrew += roll(crewOdd, 1);
+					totalCrew += roll(crewOdd, 1);
 
-				var totalOpponent = roll(opponent, 0);
-				totalOpponent += roll(opponent, 0);
-				totalOpponent += roll(opponent, 0);
-				totalOpponent += roll(opponent, 1);
-				totalOpponent += roll(opponent, 1);
-				totalOpponent += roll(opponent, 1);
+					let totalOpponent = roll(opponent, 0);
+					totalOpponent += roll(opponent, 0);
+					totalOpponent += roll(opponent, 0);
+					totalOpponent += roll(opponent, 1);
+					totalOpponent += roll(opponent, 1);
+					totalOpponent += roll(opponent, 1);
 
-				if (totalCrew > totalOpponent)
-					wins++;
+					if (totalCrew > totalOpponent)
+						wins++;
+				}
+
+				result.matches.push({
+					crewOdd: crewOdd,
+					opponent: opponent,
+					chance: Math.floor((wins / simulatedRounds) * 100)
+				});
 			}
-
-			result.matches.push({
-				crewOdd: crewOdd,
-				opponent: opponent,
-				chance: Math.floor((wins / simulatedRounds) * 100)
-			});
 		});
 	});
 
-	result.matches.sort((a: any, b: any) => {
-		return b.chance - a.chance;
-	});
+	result.matches.sort((a: any, b: any) => b.chance - a.chance);
 
 	return result;
 }
@@ -276,7 +289,7 @@ interface ISortedCrew {
 }
 
 export interface Dictionary<T> {
-    [key: string]: T;
+	[key: string]: T;
 }
 
 interface IGauntletCrew {
@@ -293,7 +306,7 @@ export interface IGauntletCrewSelection {
 
 export function gauntletCrewSelection(currentGauntlet: any, roster: any, featuredSkillBonus: number, critBonusDivider: number, preSortCount: number, includeFrozen: boolean): any {
 	let gauntletCrew: any[] = [];
-	
+
 	roster.forEach((crew: any) => {
 		if ((crew.frozen > 0) && !includeFrozen) {
 			return;
@@ -345,8 +358,8 @@ export function gauntletCrewSelection(currentGauntlet: any, roster: any, feature
 		result.best[skill] = gauntletCrew[0].name;
 
 		// Get the first few in the final score sheet
-		for(let i = 0; i < preSortCount; i++) {
-			sortedCrew.push({ 'id': gauntletCrew[i].id, 'name': gauntletCrew[i].name, 'score': getScore(gauntletCrew[i], skill) });	
+		for (let i = 0; i < preSortCount; i++) {
+			sortedCrew.push({ 'id': gauntletCrew[i].id, 'name': gauntletCrew[i].name, 'score': getScore(gauntletCrew[i], skill) });
 		}
 	}
 
