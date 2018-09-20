@@ -88,7 +88,7 @@ function getDefaultsInner(crew: any): any {
 	}
 
 	return {
-		id: crew.id, name: crew.name, short_name: crew.short_name, max_rarity: crew.max_rarity, symbol: crew.symbol,
+		id: crew.id, name: crew.name, short_name: crew.short_name, max_rarity: crew.max_rarity, symbol: crew.symbol, isExternal: false,
 		level: 0, rarity: 0, frozen: 0, buyback: false, traits: '', rawTraits: [], portrait: crew.portrait, full_body: crew.full_body,
 		command_skill: { 'core': 0, 'min': 0, 'max': 0 }, science_skill: { 'core': 0, 'min': 0, 'max': 0 },
 		security_skill: { 'core': 0, 'min': 0, 'max': 0 }, engineering_skill: { 'core': 0, 'min': 0, 'max': 0 },
@@ -106,6 +106,7 @@ export function formatAllCrew(allcrew: any[]) {
 		STTApi.applyBuffConfig(crew);
 
 		let rosterEntry = getDefaultsInner(crew);
+		rosterEntry.isExternal = true;
 
 		rosterFromCrew(rosterEntry, crew);
 		roster.push(rosterEntry);
