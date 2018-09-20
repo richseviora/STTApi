@@ -47,22 +47,43 @@ function rosterFromCrew(rosterEntry: any, crew: any): void {
 	}
 }
 
-export async function matchCrew(character: any): Promise<any> {
-	function getDefaults(id: number): any {
-		let crew = STTApi.getCrewAvatarById(id);
-		if (!crew) {
-			return undefined;
-		}
-
-		return {
-			id: crew.id, name: crew.name, short_name: crew.short_name, max_rarity: crew.max_rarity, symbol: crew.symbol,
-			level: 0, rarity: 0, frozen: 0, buyback: false, traits: '', rawTraits: [], portrait: crew.portrait, full_body: crew.full_body,
-			command_skill: { 'core': 0, 'min': 0, 'max': 0 }, science_skill: { 'core': 0, 'min': 0, 'max': 0 },
-			security_skill: { 'core': 0, 'min': 0, 'max': 0 }, engineering_skill: { 'core': 0, 'min': 0, 'max': 0 },
-			diplomacy_skill: { 'core': 0, 'min': 0, 'max': 0 }, medicine_skill: { 'core': 0, 'min': 0, 'max': 0 }
-		};
+function getDefaultsInner(crew: any): any {
+	if (!crew) {
+		return undefined;
 	}
 
+	return {
+		id: crew.id, name: crew.name, short_name: crew.short_name, max_rarity: crew.max_rarity, symbol: crew.symbol,
+		level: 0, rarity: 0, frozen: 0, buyback: false, traits: '', rawTraits: [], portrait: crew.portrait, full_body: crew.full_body,
+		command_skill: { 'core': 0, 'min': 0, 'max': 0 }, science_skill: { 'core': 0, 'min': 0, 'max': 0 },
+		security_skill: { 'core': 0, 'min': 0, 'max': 0 }, engineering_skill: { 'core': 0, 'min': 0, 'max': 0 },
+		diplomacy_skill: { 'core': 0, 'min': 0, 'max': 0 }, medicine_skill: { 'core': 0, 'min': 0, 'max': 0 }
+	};
+}
+
+function getDefaults(id: number): any {
+	return getDefaultsInner(STTApi.getCrewAvatarById(id));
+}
+
+export function formatAllCrew(allcrew: any[]) {
+	let roster: any[] = [];
+	allcrew.forEach((crew: any) => {
+		let rosterEntry = getDefaultsInner(crew);
+
+		rosterFromCrew(rosterEntry, crew);
+		roster.push(rosterEntry);
+	});
+
+	for (let crew of roster) {
+		// Populate default icons (if they're already cached)
+		crew.iconUrl = STTApi.imageProvider.getCrewCached(crew, false);
+		crew.iconBodyUrl = STTApi.imageProvider.getCrewCached(crew, true);
+	}
+
+	return roster;
+}
+
+export async function matchCrew(character: any): Promise<any> {
 	let roster: any[] = [];
 	let rosterEntry: any = {};
 

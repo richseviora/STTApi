@@ -1,6 +1,6 @@
 import STTApi from "./index";
 import CONFIG from "./CONFIG";
-import { matchCrew } from './CrewTools';
+import { matchCrew, formatAllCrew } from './CrewTools';
 import { matchShips } from './ShipTools';
 import { IFoundResult } from './ImageProvider';
 import { loadMissionData } from './MissionTools';
@@ -285,6 +285,12 @@ export async function loginSequence(onProgress: (description: string) => void, l
             //onProgress('Caching misc images... (' + current++ + '/' + total + ')');
         }
     }
+
+    onProgress('Loading crew cache...');
+
+    iconPromises.push(STTApi.networkHelper.get('https://iampicard.com/allcrew/get', { webApp: STTApi.inWebMode }).then((data: any) => {
+        STTApi.allcrew = formatAllCrew(data);
+    }).catch((error: any) => { console.warn(error); }));
 
     onProgress('Finishing up...');
 

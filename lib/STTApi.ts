@@ -48,6 +48,7 @@ export class STTApiClass {
 	public minimalComplement?: MinimalComplement;
 	public imageProvider! : ImageProvider;
 	public inWebMode: boolean;
+	public allcrew!: any[];
 
 	constructor() {
 		this.refreshEverything(true);
