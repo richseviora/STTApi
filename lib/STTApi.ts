@@ -19,7 +19,7 @@ import { NetworkInterface } from "./NetworkInterface";
 import { NetworkFetch } from "./NetworkFetch";
 import { DexieCache, QuestsTable, EquipmentTable, ImmortalsTable, ConfigTable, WikiImageTable } from "./Cache";
 import { IChallengeSuccess } from './MissionCrewSuccess';
-import { matchCrew } from './CrewTools';
+import { matchCrew, calculateBuffConfig, IBuffStat } from './CrewTools';
 import { MinimalComplement } from "./MinimalComplement";
 import { mergeDeep } from './ObjectMerge';
 import { ImageProvider, ImageCache } from './ImageProvider';
@@ -35,6 +35,7 @@ export class STTApiClass {
 	private _starbaseData: any;
 	private _fleetMemberInfo: any;
 	private _cache: DexieCache;
+	private _buffConfig: { [index: string]: IBuffStat };
 
 	public platformConfig: any;
 	public crewAvatars: any;
@@ -59,6 +60,8 @@ export class STTApiClass {
 
 		// TODO: Dexie uses IndexedDB, so doesn't work in plain node.js without polyfill - should the caching be an interface?
 		this._cache = new DexieCache("sttcache");
+
+		this._buffConfig = {};
 	}
 
 	async refreshEverything(logout: boolean) {
@@ -282,6 +285,9 @@ export class STTApiClass {
 		let data = await this.executeGetRequest("player");
 		if (data.player) {
 			this._playerData = data;
+
+			// After loading player data, we can calculate the buff config for collections and starbase
+			this._buffConfig = calculateBuffConfig();
 		} else {
 			throw new Error("Invalid data for player!");
 		}
@@ -407,6 +413,19 @@ export class STTApiClass {
 				// For example, data.character.items, array with objects with just the id property in them
 
 			}
+		}
+	}
+
+	/// Takes the raw stats from a crew and applies the current player buff config (useful for imported crew)
+	applyBuffConfig(crew: any): void {
+		const getMultiplier = (skill: string, stat: string) => {
+			return this._buffConfig[`${skill}_${stat}`].multiplier + this._buffConfig[`${skill}_${stat}`].percent_increase;
+		}
+
+		for (let skill in crew.base_skills) {
+			crew.skills[skill].core = Math.floor(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+			crew.skills[skill].range_min = Math.floor(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+			crew.skills[skill].range_max = Math.floor(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
 		}
 	}
 }
