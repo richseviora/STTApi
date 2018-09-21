@@ -4,6 +4,9 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     let mapEquipment: Set<number> = new Set();
     let missingEquipment: any[] = [];
 
+    // Search for all equipment assignable to the crew at all levels
+    // This was a terrible idea; since the data is crowdsourced, it could come from outdated recipe trees and introduce cycles in the graph; data from STTApi.allcrew is not to be trusted
+
     STTApi.itemArchetypeCache.archetypes.forEach((equipment: any) => {
         mapEquipment.add(equipment.id);
     });
@@ -34,26 +37,11 @@ export async function loadFullTree(onProgress: (description: string) => void): P
 
     // Search for all equipment currently assigned to crew
     STTApi.roster.forEach((crew: any) => {
-        let lastEquipmentLevel = 1;
         crew.equipment_slots.forEach((es:any) => {
             if (!mapEquipment.has(es.archetype)) {
                 missingEquipment.push(es.archetype);
             }
-
-            lastEquipmentLevel = es.level;
         });
-
-        // TODO: This doesn't work - it looks like DB doesn't allow you to query an item's details (such as recipe) if you don't yet own the respective crew at the right level yet
-        // Search for all equipment assignable to the crew at all levels
-        /*let rc = STTApi.allcrew.find((c: any) => c.symbol === crew.symbol);
-
-        if (rc) {
-            rc.equipment_slots.forEach((es:any) => {
-                if ((es.level >= lastEquipmentLevel) && !mapEquipment.has(es.archetype)) {
-                    missingEquipment.push(es.archetype);
-                }
-            });
-        }*/
     });
 
     onProgress(`Loading equipment... (${missingEquipment.length} remaining)`);

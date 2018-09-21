@@ -107,9 +107,10 @@ export function formatAllCrew(allcrew: any[]) {
 
 		let rosterEntry = getDefaultsInner(crew);
 		rosterEntry.isExternal = true;
-		crew.equipment = [];
 
 		rosterFromCrew(rosterEntry, crew);
+
+		rosterEntry.archetypes = crew.archetypes;
 		roster.push(rosterEntry);
 	});
 

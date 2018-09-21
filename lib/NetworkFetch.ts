@@ -36,19 +36,24 @@ export class NetworkFetch implements NetworkInterface {
 	}
 
 	async get(uri: string, qs: any): Promise<any> {
-		let searchParams: URLSearchParams = new URLSearchParams();
-		for (const prop of Object.keys(qs)) {
-			if (Array.isArray(qs[prop])) {
-				qs[prop].forEach((entry: any): void => {
-					searchParams.append(prop + '[]', entry);
-				});
+		let response;
+		if (qs) {
+			let searchParams: URLSearchParams = new URLSearchParams();
+			for (const prop of Object.keys(qs)) {
+				if (Array.isArray(qs[prop])) {
+					qs[prop].forEach((entry: any): void => {
+						searchParams.append(prop + '[]', entry);
+					});
+				}
+				else {
+					searchParams.set(prop, qs[prop]);
+				}
 			}
-			else {
-				searchParams.set(prop, qs[prop]);
-			}
-		}
 
-		let response = await window.fetch(uri + "?" + searchParams.toString());
+			response = await window.fetch(uri + "?" + searchParams.toString());
+		} else {
+			response = await window.fetch(uri);
+		}
 
 		if (response.ok) {
 			return response.json();

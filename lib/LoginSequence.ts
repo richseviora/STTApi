@@ -231,7 +231,7 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     onProgress('Loading crew cache...');
 
-    let allcrew = await STTApi.networkHelper.get('https://iampicard.com/allcrew/get', { webApp: STTApi.inWebMode });
+    let allcrew = await STTApi.networkHelper.get('https://iampicard.com/allcrew.json', undefined);
     STTApi.allcrew = formatAllCrew(allcrew);
 
     if (!STTApi.inWebMode) {
