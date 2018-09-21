@@ -229,6 +229,11 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     //await Promise.all(iconPromises);
 
+    onProgress('Loading crew cache...');
+
+    let allcrew = await STTApi.networkHelper.get('https://iampicard.com/allcrew/get', { webApp: STTApi.inWebMode });
+    STTApi.allcrew = formatAllCrew(allcrew);
+
     if (!STTApi.inWebMode) {
         onProgress('Loading equipment...');
 
@@ -285,12 +290,6 @@ export async function loginSequence(onProgress: (description: string) => void, l
             //onProgress('Caching misc images... (' + current++ + '/' + total + ')');
         }
     }
-
-    onProgress('Loading crew cache...');
-
-    iconPromises.push(STTApi.networkHelper.get('https://iampicard.com/allcrew/get', { webApp: STTApi.inWebMode }).then((data: any) => {
-        STTApi.allcrew = formatAllCrew(data);
-    }).catch((error: any) => { console.warn(error); }));
 
     onProgress('Finishing up...');
 

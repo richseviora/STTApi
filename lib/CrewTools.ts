@@ -107,6 +107,7 @@ export function formatAllCrew(allcrew: any[]) {
 
 		let rosterEntry = getDefaultsInner(crew);
 		rosterEntry.isExternal = true;
+		crew.equipment = [];
 
 		rosterFromCrew(rosterEntry, crew);
 		roster.push(rosterEntry);

@@ -10,7 +10,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
 
     // Have we already cached equipment details for the current digest (since the last recipe update)?
     let entry = await STTApi.equipmentCache.where('digest').equals(STTApi.serverConfig.config.craft_config.recipe_tree.digest).first();
-        
+
     if (entry) {
         // Merge the cached equipment, since the recipe tree didn't change since our last load
         entry.archetypeCache.forEach((cacheEntry: any) => {
@@ -34,11 +34,26 @@ export async function loadFullTree(onProgress: (description: string) => void): P
 
     // Search for all equipment currently assigned to crew
     STTApi.roster.forEach((crew: any) => {
+        let lastEquipmentLevel = 1;
         crew.equipment_slots.forEach((es:any) => {
             if (!mapEquipment.has(es.archetype)) {
                 missingEquipment.push(es.archetype);
             }
+
+            lastEquipmentLevel = es.level;
         });
+
+        // TODO: This doesn't work - it looks like DB doesn't allow you to query an item's details (such as recipe) if you don't yet own the respective crew at the right level yet
+        // Search for all equipment assignable to the crew at all levels
+        /*let rc = STTApi.allcrew.find((c: any) => c.symbol === crew.symbol);
+
+        if (rc) {
+            rc.equipment_slots.forEach((es:any) => {
+                if ((es.level >= lastEquipmentLevel) && !mapEquipment.has(es.archetype)) {
+                    missingEquipment.push(es.archetype);
+                }
+            });
+        }*/
     });
 
     onProgress(`Loading equipment... (${missingEquipment.length} remaining)`);
@@ -53,10 +68,10 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     }
 
     // Load the description for the missing equipment
-    let data = await STTApi.executeGetRequest("item/description", { ids: missingEquipment.slice(0,20) });
+    let archetypes = await loadItemsDescription(missingEquipment.slice(0,20));
 
-    if (data.item_archetype_cache && data.item_archetype_cache.archetypes) {
-        STTApi.itemArchetypeCache.archetypes = STTApi.itemArchetypeCache.archetypes.concat(data.item_archetype_cache.archetypes);
+    if (archetypes.length > 0) {
+        STTApi.itemArchetypeCache.archetypes = STTApi.itemArchetypeCache.archetypes.concat(archetypes);
         return loadFullTree(onProgress);
     }
 
@@ -65,4 +80,33 @@ export async function loadFullTree(onProgress: (description: string) => void): P
         digest: STTApi.serverConfig.config.craft_config.recipe_tree.digest,
         archetypeCache: STTApi.itemArchetypeCache.archetypes
     });
+}
+
+async function loadItemsDescription(ids: number[]): Promise<any[]> {
+    let archetypes: any[] = [];
+    try
+    {
+        // Load the description for the missing equipment
+        let data = await STTApi.executeGetRequest("item/description", { ids });
+
+        if (data.item_archetype_cache && data.item_archetype_cache.archetypes) {
+            archetypes = data.item_archetype_cache.archetypes;
+        }
+    }
+    catch(error)
+    {
+        // Some equipment is causing the server to choke, time to binary search the culprit
+        if (ids.length === 1) {
+            console.error(`The description for item ${ids[0]} fails to load.`);
+        } else {
+            let leftSide = ids.splice(0,Math.ceil(ids.length / 2));
+
+            let leftArchetypes = await loadItemsDescription(leftSide);
+            let rightArchetypes = await loadItemsDescription(ids);
+
+            archetypes = leftArchetypes.concat(rightArchetypes);
+        }
+    }
+
+    return archetypes;
 }
