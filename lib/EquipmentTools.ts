@@ -54,10 +54,11 @@ export async function loadFullTree(onProgress: (description: string) => void): P
         crew.equipment_slots.forEach((es: any) => {
             let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === es.symbol);
             if (a) {
-                es.id = a.id;
+                //console.log(`For ${crew.name} at level ${es.level} updating ${es.symbol} from ${es.archetype} to ${a.id}`);
+                es.archetype = a.id;
             } else {
                 console.warn(`Something went wrong looking for equipment '${es.symbol}'`);
-                es.id = 0;
+                es.archetype = 0;
             }
         });
 
