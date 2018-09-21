@@ -7,8 +7,21 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     // Search for all equipment assignable to the crew at all levels
     // This was a terrible idea; since the data is crowdsourced, it could come from outdated recipe trees and introduce cycles in the graph; data from STTApi.allcrew is not to be trusted
 
+    let allCrewEquip: Set<string> = new Set();
+    STTApi.allcrew.forEach((crew: any) => {
+        crew.equipment_slots.forEach((es: any) => {
+            let a = crew.archetypes.find((a: any) => a.id === es.archetype);
+
+            if (a) {
+                allCrewEquip.add(a.symbol);
+                es.symbol = a.symbol;
+            }
+        });
+    });
+
     STTApi.itemArchetypeCache.archetypes.forEach((equipment: any) => {
         mapEquipment.add(equipment.id);
+        allCrewEquip.delete(equipment.symbol);
     });
 
     // Have we already cached equipment details for the current digest (since the last recipe update)?
@@ -21,8 +34,35 @@ export async function loadFullTree(onProgress: (description: string) => void): P
                 STTApi.itemArchetypeCache.archetypes.push(cacheEntry);
                 mapEquipment.add(cacheEntry.id);
             }
+
+            allCrewEquip.delete(cacheEntry.symbol);
         });
     }
+
+    // Load the description for all crew equipment
+    let allcrewData = Array.from(allCrewEquip.values());
+    while (allcrewData.length > 0) {
+        onProgress(`Loading all crew equipment... (${allcrewData.length} remaining)`);
+        let archetypesAll = await loadItemsDescription(allcrewData.slice(0,20));
+        if (archetypesAll.length > 0) {
+            STTApi.itemArchetypeCache.archetypes = STTApi.itemArchetypeCache.archetypes.concat(archetypesAll);
+        }
+    }
+
+    // Now replace the ids with proper ones
+    STTApi.allcrew.forEach((crew: any) => {
+        crew.equipment_slots.forEach((es: any) => {
+            let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === es.symbol);
+            if (a) {
+                es.id = a.id;
+            } else {
+                console.warn(`Something went wrong looking for equipment '${es.symbol}'`);
+                es.id = 0;
+            }
+        });
+
+        crew.archetypes = [];
+    });
 
     // Search for all equipment in the recipe tree
     STTApi.itemArchetypeCache.archetypes.forEach((equipment: any) => {
@@ -70,7 +110,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     });
 }
 
-async function loadItemsDescription(ids: number[]): Promise<any[]> {
+async function loadItemsDescription(ids: number[] | string[]): Promise<any[]> {
     let archetypes: any[] = [];
     try
     {
