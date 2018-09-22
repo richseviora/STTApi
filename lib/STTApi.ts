@@ -336,7 +336,16 @@ export class STTApiClass {
 		if (data) {
 			return this.applyUpdates(data);
 		} else {
-			throw new Error("Invalid data for frozen crew!");
+			throw new Error("Invalid data for crew!");
+		}
+	}
+
+	async warpQuest(id: number, mastery_level: number, factor: number): Promise<any> {
+		let data = await this.executeGetRequest("quest/warp", { id, mastery_level, factor });
+		if (data) {
+			return this.applyUpdates(data);
+		} else {
+			throw new Error("Invalid data for quest warp!");
 		}
 	}
 
@@ -385,19 +394,23 @@ export class STTApiClass {
 		this.roster = await matchCrew(this._playerData.player.character);
 	}
 
-	async applyUpdates(data: any): Promise<any> {
+	async applyUpdates(data: any): Promise<any[]> {
 		if (!data) {
-			return;
+			return [];
 		}
 
 		if (Array.isArray(data)) {
+			let ephemerals: any[] = [];
 			for(let val of data) {
-				await this.applyUpdates(val);
+				let e = await this.applyUpdates(val);
+				ephemerals = ephemerals.concat(e);
 			}
+
+			return ephemerals;
 		} else {
 			if (!data.action) {
-				console.log(`Not sure what message this is; should we be updating something: '${data}'`)
-				return;
+				console.log(`Not sure what message this is; should we be updating something: '${data}'`);
+				return [];
 			}
 
 			if (data.action === 'update') {
@@ -411,8 +424,14 @@ export class STTApiClass {
 			} else if (data.action === 'delete') {
 				// TODO
 				// For example, data.character.items, array with objects with just the id property in them
-
+				console.log('Delete not applied; data is most likely stale; user should refresh');
+			} else if (data.action === 'ephemeral') {
+				return [data];
+			} else {
+				console.log(`Unknown data action '${data.action}' not applied. Data is most likely stale; user should refresh`);
 			}
+
+			return [];
 		}
 	}
 
