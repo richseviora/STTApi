@@ -43,7 +43,8 @@ export async function loadFullTree(onProgress: (description: string) => void): P
     let allcrewData = Array.from(allCrewEquip.values());
     while (allcrewData.length > 0) {
         onProgress(`Loading all crew equipment... (${allcrewData.length} remaining)`);
-        let archetypesAll = await loadItemsDescription(allcrewData.slice(0,20));
+        let archetypesAll = await loadItemsDescription(allcrewData.splice(0,20));
+        console.log(`Loaded ${archetypesAll.length}, remaining ${allcrewData.length}`);
         if (archetypesAll.length > 0) {
             STTApi.itemArchetypeCache.archetypes = STTApi.itemArchetypeCache.archetypes.concat(archetypesAll);
         }
