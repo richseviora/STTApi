@@ -83,10 +83,8 @@ export class STTApiClass {
 			this._accessToken = undefined;
 
 			if (this._cache) {
-				let entry = await this._cache.config.where('key').equals('autoLogin').first();
-				if (!entry || entry.value === false) {
-					await this._cache.config.where('key').equals('accessToken').delete();
-				}
+				await this._cache.config.where('key').equals('autoLogin').delete();
+				await this._cache.config.where('key').equals('accessToken').delete();
 			}
 		}
 	}

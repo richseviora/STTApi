@@ -23,8 +23,8 @@
   "homepage": "https://github.com/IAmPicard/STTApi#readme",
   "devDependencies": {
     "@types/node": "latest",
-    "copyfiles": "^2.1.0",
-    "typescript": "^3.0.3"
+    "copyfiles": "latest",
+    "typescript": "latest"
   },
   "dependencies": {
     "unitiyfs-asset-parser": "latest",
