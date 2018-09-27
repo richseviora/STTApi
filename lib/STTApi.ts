@@ -51,17 +51,26 @@ export class STTApiClass {
 	public inWebMode: boolean;
 	public allcrew!: any[];
 
+	// TODO: make this configurable, if someone wants to host the web app themselves
+	public serverAddress: string = 'https://iampicard.com/';
+
 	constructor() {
 		this.refreshEverything(true);
-
 		this._net = new NetworkFetch();
-
-		this.inWebMode = false;
 
 		// TODO: Dexie uses IndexedDB, so doesn't work in plain node.js without polyfill - should the caching be an interface?
 		this._cache = new DexieCache("sttcache");
 
+		this.inWebMode = false;
 		this._buffConfig = {};
+	}
+
+	setWebMode(webMode: boolean) {
+		this.inWebMode = webMode;
+
+		if (this.inWebMode) {
+			this._net.setProxy(this.serverAddress + 'proxy');
+		}
 	}
 
 	async refreshEverything(logout: boolean) {
