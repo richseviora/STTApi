@@ -35,7 +35,7 @@ export class NetworkFetch implements NetworkInterface {
 		}
 	}
 
-	async get(uri: string, qs: any): Promise<any> {
+	async get(uri: string, qs: any, json: boolean = true): Promise<any> {
 		let response;
 		if (qs) {
 			let searchParams: URLSearchParams = new URLSearchParams();
@@ -56,7 +56,11 @@ export class NetworkFetch implements NetworkInterface {
 		}
 
 		if (response.ok) {
-			return response.json();
+			if (json) {
+				return response.json();
+			} else {
+				return response.text();
+			}
 		} else {
 			let data = await response.text();
 			throw new Error(`Network error; status ${response.status}; reply ${data}.`);
