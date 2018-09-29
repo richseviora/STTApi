@@ -117,7 +117,7 @@ export class NetworkFetch implements NetworkInterface {
 		return response;
 	}
 
-	async getRaw(uri: string, qs: any): Promise<any> {
+	async getRaw(uri: string, qs: any): Promise<ArrayBuffer> {
 		// TODO: this should not be in here (networkfetch should be agnostic of its callers)
 		let headers: any = {
 			'Origin': CONFIG.URL_SERVER,
@@ -131,22 +131,11 @@ export class NetworkFetch implements NetworkInterface {
 			headers: headers
 		});
 
-		if (response && response.ok && response.body) {
-			let reader = response.body.getReader();
-			let buffers: Buffer[] = [];
-			let getAllData = async (): Promise<any> => {
-				let result = await reader.read();
-				if (!result.done) {
-					buffers.push(new Buffer(result.value));
-					return getAllData();
-				}
-
-				return Buffer.concat(buffers);
-			}
-
-			return getAllData();
+		if (response.ok) {
+			return response.arrayBuffer();
+		} else {
+			let data = await response.text();
+			throw new Error(`Network error; status ${response.status}; reply ${data}.`);
 		}
-
-		throw new Error("Fail loading data");
 	}
 }

@@ -3,32 +3,13 @@ import CONFIG from "./CONFIG";
 import { ImageProvider, ImageCache, IBitmap, IFoundResult } from './ImageProvider';
 import { WorkerPool } from './WorkerPool';
 
-export class DummyImageCache implements ImageCache {
-    getImage(url: string): Promise<string | undefined> {
-        return Promise.resolve(undefined);
-    }
-
-    saveImage(url: string, data: IBitmap): Promise<string> {
-        return Promise.resolve("data:image/png;base64," + new Buffer(data.data).toString('base64'));
-    }
-
-    getCached(url: string): string {
-        return '';
-    }
-}
-
 export class AssetImageProvider implements ImageProvider {
     private _imageCache: ImageCache;
     private _baseURLAsset: string;
     private _workerPool: WorkerPool
 
-    constructor(imageCache: ImageCache | undefined) {
-        if (imageCache) {
-            this._imageCache = imageCache;
-        }
-        else {
-            this._imageCache = new DummyImageCache();
-        }
+    constructor(imageCache: ImageCache) {
+        this._imageCache = imageCache;
         this._workerPool = new WorkerPool(8); //TODO: can we get the number of cores somehow?
         this._baseURLAsset = '';
     }

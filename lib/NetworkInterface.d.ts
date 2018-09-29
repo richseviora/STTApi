@@ -9,5 +9,5 @@ export interface NetworkInterface {
 	setProxy(urlProxy: string): void;
 
 	postjson(uri: string, form: any): Promise<any>;
-	getRaw(uri: string, qs: any): Promise<any>;
+	getRaw(uri: string, qs: any): Promise<ArrayBuffer>;
 }

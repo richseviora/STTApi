@@ -98,7 +98,7 @@ export class STTApiClass {
 		}
 	}
 
-	setImageProvider(useAssets: boolean, imageCache: ImageCache|undefined) {
+	setImageProvider(useAssets: boolean, imageCache: ImageCache) {
 		if (useAssets) {
 			this.imageProvider = new AssetImageProvider(imageCache);
 		}
