@@ -9,6 +9,11 @@ export async function loadVoyage(voyageId: number, newOnly: boolean = true): Pro
         data.forEach((action: any) => {
             if (action.character) {
                 // TODO: if DB adds support for more than one voyage at a time this hack won't work
+
+                // Clear out the dilemma resolutions before load to avoid duplicates
+                if (STTApi.playerData.character.voyage[0] && STTApi.playerData.character.voyage[0].dilemma) {
+                    STTApi.playerData.character.voyage[0].dilemma.resolutions = [];
+                }
                 STTApi.playerData.character.voyage[0] = mergeDeep(STTApi.playerData.character.voyage[0], action.character.voyage[0]);
             }
             else if (action.voyage_narrative) {
