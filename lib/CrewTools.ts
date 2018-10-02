@@ -102,7 +102,15 @@ function getDefaults(id: number): any {
 
 export function formatAllCrew(allcrew: any[]) {
 	let roster: any[] = [];
+	let dupeChecker = new Set<string>();
 	allcrew.forEach((crew: any) => {
+		// Sometimes duplicates can sneak into our allcrew list, filter them out
+		if (dupeChecker.has(crew.symbol)) {
+			return;
+		}
+
+		dupeChecker.add(crew.symbol);
+
 		STTApi.applyBuffConfig(crew);
 
 		let rosterEntry = getDefaultsInner(crew);

@@ -234,6 +234,24 @@ export async function loginSequence(onProgress: (description: string) => void, l
     let allcrew = await STTApi.networkHelper.get(STTApi.serverAddress + 'allcrew.json', undefined);
     STTApi.allcrew = formatAllCrew(allcrew);
 
+    // Also load the avatars for crew not in the roster
+    for (let crew of STTApi.allcrew) {
+        crew.iconUrl = STTApi.imageProvider.getCrewCached(crew, false);
+        if (crew.iconUrl === '') {
+            iconPromises.push(STTApi.imageProvider.getCrewImageUrl(crew, false, crew.id).then((found: IFoundResult) => {
+                onProgress('Caching crew images... (' + current++ + '/' + total + ')');
+                let crew = STTApi.allcrew.find((crew: any) => crew.id === found.id);
+                crew.iconUrl = found.url;
+            }).catch((error: any) => { /*console.warn(error);*/ }));
+        } else {
+            // Image is already cached
+
+            current++;
+            // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
+            //onProgress('Caching crew images... (' + current++ + '/' + total + ')');
+        }
+    }
+
     if (!STTApi.inWebMode) {
         onProgress('Loading equipment...');
 
