@@ -197,21 +197,12 @@ async function loadFrozen(rosterEntry: any): Promise<void> {
 }
 
 export function formatCrewStats(crew: any): string {
-	let SkillShortNames: { [index: string]: string } = {
-		'command_skill': 'CMD',
-		'science_skill': 'SCI',
-		'security_skill': 'SEC',
-		'engineering_skill': 'ENG',
-		'diplomacy_skill': 'DIP',
-		'medicine_skill': 'MED'
-	};
-
 	let result = '';
 	for (let skillName in CONFIG.SKILLS) {
 		let skill = crew[skillName];
 		
 		if (skill.core && (skill.core > 0)) {
-			result += `${SkillShortNames[skillName]} (${Math.floor(skill.core + (skill.min + skill.max) / 2)}) `;
+			result += `${CONFIG.SKILLS_SHORT[skillName]} (${Math.floor(skill.core + (skill.min + skill.max) / 2)}) `;
 		}
 	}
 	return result;
