@@ -183,6 +183,7 @@ async function loadFrozen(rosterEntry: any): Promise<void> {
 	let entry = await STTApi.immortals.where('symbol').equals(rosterEntry.symbol).first();
 	if (entry) {
 		//console.info('Found ' + rosterEntry.symbol + ' in the immortalized crew cache');
+		STTApi.applyBuffConfig(entry.crew);
 		rosterFromCrew(rosterEntry, entry.crew);
 	} else {
 		let crew = await STTApi.loadFrozenCrew(rosterEntry.symbol);
