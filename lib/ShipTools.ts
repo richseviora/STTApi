@@ -20,5 +20,20 @@ export function matchShips(ships: any): Promise<any> {
 
 		newShips.push(schematic.ship);
 	});
+
+	// Ships with no schematic? Apparently true for constellation class
+	ships.forEach((ship: any) => {
+		let exists = newShips.find((s: any) => s.name === ship.name);
+		if (!exists) {
+			if (ship.traits) {
+				ship.traitNames = ship.traits.concat(ship.traits_hidden).map((trait: any) => STTApi.getShipTraitName(trait)).join();
+			} else {
+				ship.traitNames = '';
+			}
+	
+			newShips.push(ship);
+		}
+	});
+
 	return Promise.resolve(newShips);
 }
