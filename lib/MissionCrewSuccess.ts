@@ -141,13 +141,13 @@ export function calculateMissionCrewSuccess(): Array<IChallengeSuccess> {
 }
 
 export function calculateMinimalComplementAsync(): void {
-    let ComputeWorker = require("worker-loader?name=computeWorker.js!./computeWorker");
+    /*let ComputeWorker = require("worker-loader?name=computeWorker.js!./computeWorker");
 
     const worker: Worker = new ComputeWorker();
     worker.addEventListener('message', (message: any) => {
         STTApi.minimalComplement = message.data;
     });
-    worker.postMessage({ success: STTApi.missionSuccess });
+    worker.postMessage({ success: STTApi.missionSuccess });*/
 }
 
 export interface ICrewPath

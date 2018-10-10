@@ -1,7 +1,7 @@
 import STTApi from "./index";
 
 export class BonusCrew {
-    eventName: string;
+    eventName: string = '';
     crewIds: number[] = [];
 };
 

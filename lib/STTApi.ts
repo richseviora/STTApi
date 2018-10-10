@@ -25,6 +25,7 @@ import { mergeDeep } from './ObjectMerge';
 import { ImageProvider, ImageCache } from './ImageProvider';
 import { WikiImageProvider } from './WikiImageTools';
 import { AssetImageProvider } from './AssetImageProvider';
+import { NeededEquipmentClass, IEquipNeedFilter, IEquipNeed } from './EquipmentTools';
 import Dexie from "dexie";
 import CONFIG from "./CONFIG";
 
@@ -36,6 +37,7 @@ export class STTApiClass {
 	private _fleetMemberInfo: any;
 	private _cache: DexieCache;
 	private _buffConfig: { [index: string]: IBuffStat };
+	private _neededEquipment: NeededEquipmentClass;
 
 	public platformConfig: any;
 	public crewAvatars: any;
@@ -57,6 +59,7 @@ export class STTApiClass {
 	constructor() {
 		this.refreshEverything(true);
 		this._net = new NetworkFetch();
+		this._neededEquipment = new NeededEquipmentClass();
 
 		// TODO: Dexie uses IndexedDB, so doesn't work in plain node.js without polyfill - should the caching be an interface?
 		this._cache = new DexieCache("sttcache");
@@ -453,5 +456,9 @@ export class STTApiClass {
 			crew.skills[skill].range_min = Math.floor(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
 			crew.skills[skill].range_max = Math.floor(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
 		}
+	}
+
+	getNeededEquipment(filters: IEquipNeedFilter): IEquipNeed[] {
+		return this._neededEquipment.filterNeededEquipment(filters);
 	}
 }
