@@ -168,7 +168,7 @@ export function calculateQuestRecommendations(questId: number, loadEvenFinishedN
     let mission: any = undefined;
     STTApi.missions.forEach((episode: any) => {
         episode.quests.forEach((quest: any) => {
-            if (quest.id == questId) {
+            if (quest.id === questId) {
                 mission = quest;
             }
         });
@@ -297,5 +297,8 @@ export function calculateQuestRecommendations(questId: number, loadEvenFinishedN
         }
     });
 
-    return { mission, bestCrewPaths, allFinished: unfinishedNodes.length === 0 };
+    let allFinished = unfinishedNodes.length === 0;
+    allFinished = allFinished && (mission.mastery_levels.reduce((accumulator: number, currentValue: any) => (accumulator + currentValue.progress.goals - currentValue.progress.goal_progress), 0) === 0);
+
+    return { mission, bestCrewPaths, allFinished };
 }
