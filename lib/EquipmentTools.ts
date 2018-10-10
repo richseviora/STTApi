@@ -186,7 +186,6 @@ export class NeededEquipmentClass {
 
     filterNeededEquipment(filters: IEquipNeedFilter): IEquipNeed[] {
         this._getCadetableItems();
-        console.log(this._cadetableItems);
 		const filteredCrew = this._getFilteredCrew(filters);
         const neededEquipment = this._getNeededEquipment(filteredCrew, filters);
         return neededEquipment;
