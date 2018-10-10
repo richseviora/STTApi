@@ -186,10 +186,10 @@ export class NeededEquipmentClass {
 
     filterNeededEquipment(filters: IEquipNeedFilter): IEquipNeed[] {
         this._getCadetableItems();
-		const filteredCrew = this._getFilteredCrew(filters);
+        const filteredCrew = this._getFilteredCrew(filters);
         const neededEquipment = this._getNeededEquipment(filteredCrew, filters);
         return neededEquipment;
-	}
+    }
 
     private _getCadetableItems() {
         if (this._cadetableItems.size === 0) {
@@ -197,9 +197,9 @@ export class NeededEquipmentClass {
             let cadetMissions = STTApi.missions.filter((mission: any) => mission.quests.some((quest: any) => quest.cadet))
                 .filter((mission: any) => mission.episode_title.indexOf("Adv") === -1);
 
-            for(let cadetMission of cadetMissions) {
-                for(let quest of cadetMission.quests) {
-                    for(let masteryLevel of quest.mastery_levels) {
+            for (let cadetMission of cadetMissions) {
+                for (let quest of cadetMission.quests) {
+                    for (let masteryLevel of quest.mastery_levels) {
                         masteryLevel.rewards.filter((r: any) => r.type === 0).forEach((reward: any) => {
                             reward.potential_rewards.forEach((item: any) => {
                                 let info: IItemSource = {
@@ -222,69 +222,69 @@ export class NeededEquipmentClass {
     }
 
     private _getFilteredCrew(filters: IEquipNeedFilter): any[] {
-		// filter out `crew.buyback` by default
-		let crew = STTApi.roster.filter((c: any) => !c.buyback);
+        // filter out `crew.buyback` by default
+        let crew = STTApi.roster.filter((c: any) => !c.buyback);
 
-		if (filters.onlyFavorite) {
+        if (filters.onlyFavorite) {
             crew = crew.filter((c: any) => c.favorite);
         }
 
-		return crew;
+        return crew;
     }
 
     private _mergeMapUnowned(target: Map<number, IEquipNeed>, source: Map<number, IEquipNeed>) {
-		for (let archetype of source.keys()) {
-			if (target.has(archetype)) {
-				target.get(archetype)!.needed += source.get(archetype)!.needed;
+        for (let archetype of source.keys()) {
+            if (target.has(archetype)) {
+                target.get(archetype)!.needed += source.get(archetype)!.needed;
 
-				for (let count of source.get(archetype)!.counts.keys()) {
-					if (target.get(archetype)!.counts.has(count)) {
-						target.get(archetype)!.counts.get(count)!.count += source.get(archetype)!.counts.get(count)!.count;
-					} else {
-						target.get(archetype)!.counts.set(count, source.get(archetype)!.counts.get(count)!);
-					}
-				}
+                for (let count of source.get(archetype)!.counts.keys()) {
+                    if (target.get(archetype)!.counts.has(count)) {
+                        target.get(archetype)!.counts.get(count)!.count += source.get(archetype)!.counts.get(count)!.count;
+                    } else {
+                        target.get(archetype)!.counts.set(count, source.get(archetype)!.counts.get(count)!);
+                    }
+                }
 
-			} else {
-				target.set(archetype, source.get(archetype)!);
-			}
-		}
+            } else {
+                target.set(archetype, source.get(archetype)!);
+            }
+        }
 
-		return target;
+        return target;
     }
-    
-    private _calculateNeeds(unparsedEquipment: IUnparsedEquipment[], archetypes: any[]) {
-		let mapUnowned: Map<number, IEquipNeed> = new Map();
-		let mapIncompleteUsed: Map<number, IEquipNeed> = new Map();
-		while (unparsedEquipment.length > 0) {
-			let eq = unparsedEquipment.pop()!;
-			let equipment = archetypes.find(e => e.id === eq.archetype);
 
-			if (!equipment) {
-				console.warn(`This equipment has no recipe and no sources: '${eq.archetype}'`);
-			}
-			else if (equipment.recipe && equipment.recipe.demands && (equipment.recipe.demands.length > 0)) {
-				let have = STTApi.playerData.character.items.find((item: any) => item.archetype_id === eq.archetype);
-				// don't have any partially built, queue up to break into pieces
-				if (!have || have.quantity <= 0) {
-					// Add all children in the recipe to parse on the next loop iteration
-					equipment.recipe.demands.forEach((recipeItem: any) => {
-						unparsedEquipment.push({
-							archetype: recipeItem.archetype_id,
-							need: recipeItem.count * eq.need,
-							crew: eq.crew
-						});
-					});
-				}
-				else {
-					// see how many are already accounted for
-					let found = mapIncompleteUsed.get(eq.archetype);
-					if (found) {
-						found.needed += eq.need;
-					} else {
-						found = {
-							equipment,
-							needed: eq.need - have.quantity,
+    private _calculateNeeds(unparsedEquipment: IUnparsedEquipment[], archetypes: any[]) {
+        let mapUnowned: Map<number, IEquipNeed> = new Map();
+        let mapIncompleteUsed: Map<number, IEquipNeed> = new Map();
+        while (unparsedEquipment.length > 0) {
+            let eq = unparsedEquipment.pop()!;
+            let equipment = archetypes.find(e => e.id === eq.archetype);
+
+            if (!equipment) {
+                console.warn(`This equipment has no recipe and no sources: '${eq.archetype}'`);
+            }
+            else if (equipment.recipe && equipment.recipe.demands && (equipment.recipe.demands.length > 0)) {
+                let have = STTApi.playerData.character.items.find((item: any) => item.archetype_id === eq.archetype);
+                // don't have any partially built, queue up to break into pieces
+                if (!have || have.quantity <= 0) {
+                    // Add all children in the recipe to parse on the next loop iteration
+                    equipment.recipe.demands.forEach((recipeItem: any) => {
+                        unparsedEquipment.push({
+                            archetype: recipeItem.archetype_id,
+                            need: recipeItem.count * eq.need,
+                            crew: eq.crew
+                        });
+                    });
+                }
+                else {
+                    // see how many are already accounted for
+                    let found = mapIncompleteUsed.get(eq.archetype);
+                    if (found) {
+                        found.needed += eq.need;
+                    } else {
+                        found = {
+                            equipment,
+                            needed: eq.need - have.quantity,
                             have: have.quantity,
                             cadetSources: this._cadetableItems.get(equipment.id) || [],
                             counts: new Map(),
@@ -292,168 +292,169 @@ export class NeededEquipmentClass {
                             isShipBattleObtainable: false,
                             isFactionObtainable: false,
                             isCadetable: false
-						};
+                        };
 
-						mapIncompleteUsed.set(eq.archetype, found);
-					}
+                        mapIncompleteUsed.set(eq.archetype, found);
+                    }
 
-					// if total requirements exceed inventory
-					if (found.needed > 0) {
-						// how many can be filled for this equipment demand
-						let partialNeeded = eq.need;
-						// If this new requirement pushed past inventory amount, only need a partial amount equal to the overlap
-						if (found.needed < eq.need) {
-							partialNeeded = eq.need - found.needed;
-						}
-						equipment.recipe.demands.forEach((recipeItem: any) => {
-							unparsedEquipment.push({
-								archetype: recipeItem.archetype_id,
-								need: recipeItem.count * partialNeeded,
-								crew: eq.crew
-							});
-						});
-					}
-					else {
-						//NOTE: this clause can be removed to avoid zero counts for crew members
-						// Track the crew that needs them, but retain zero count (since the item is partially built)
-						// in case the intermediate item gets consumed elsewhere
-						equipment.recipe.demands.forEach((recipeItem: any) => {
-							unparsedEquipment.push({
-								archetype: recipeItem.archetype_id,
-								need: 0,
-								crew: eq.crew
-							});
-						});
-					}
+                    // if total requirements exceed inventory
+                    if (found.needed > 0) {
+                        // how many can be filled for this equipment demand
+                        let partialNeeded = eq.need;
+                        // If this new requirement pushed past inventory amount, only need a partial amount equal to the overlap
+                        if (found.needed < eq.need) {
+                            partialNeeded = eq.need - found.needed;
+                        }
+                        equipment.recipe.demands.forEach((recipeItem: any) => {
+                            unparsedEquipment.push({
+                                archetype: recipeItem.archetype_id,
+                                need: recipeItem.count * partialNeeded,
+                                crew: eq.crew
+                            });
+                        });
+                    }
+                    else {
+                        //NOTE: this clause can be removed to avoid zero counts for crew members
+                        // Track the crew that needs them, but retain zero count (since the item is partially built)
+                        // in case the intermediate item gets consumed elsewhere
+                        equipment.recipe.demands.forEach((recipeItem: any) => {
+                            unparsedEquipment.push({
+                                archetype: recipeItem.archetype_id,
+                                need: 0,
+                                crew: eq.crew
+                            });
+                        });
+                    }
 
-				}
-			} else if (equipment.item_sources && (equipment.item_sources.length > 0) || this._cadetableItems.has(equipment.id)) {
-				let found = mapUnowned.get(eq.archetype);
-				if (found) {
-					found.needed += eq.need;
-					let counts = found.counts.get(eq.crew.id);
-					if (counts) {
-						counts.count += eq.need;
-					} else {
-						found.counts.set(eq.crew.id, { crew: eq.crew, count: eq.need });
-					}
-				} else {
-					let have = STTApi.playerData.character.items.find((item: any) => item.archetype_id === eq.archetype);
-					let isDisputeMissionObtainable = equipment.item_sources.filter((e: any) => e.type === 0).length > 0;
-					let isShipBattleObtainable = equipment.item_sources.filter((e: any) => e.type === 2).length > 0;
-					let isFactionObtainable = equipment.item_sources.filter((e: any) => e.type === 1).length > 0;
-					let isCadetable = this._cadetableItems.has(equipment.id);
-					let counts: Map<number, IEquipNeedCount> = new Map();
+                }
+            } else if (equipment.item_sources && (equipment.item_sources.length > 0) || this._cadetableItems.has(equipment.id)) {
+                let found = mapUnowned.get(eq.archetype);
+                if (found) {
+                    found.needed += eq.need;
+                    let counts = found.counts.get(eq.crew.id);
+                    if (counts) {
+                        counts.count += eq.need;
+                    } else {
+                        found.counts.set(eq.crew.id, { crew: eq.crew, count: eq.need });
+                    }
+                } else {
+                    let have = STTApi.playerData.character.items.find((item: any) => item.archetype_id === eq.archetype);
+                    let isDisputeMissionObtainable = equipment.item_sources.filter((e: any) => e.type === 0).length > 0;
+                    let isShipBattleObtainable = equipment.item_sources.filter((e: any) => e.type === 2).length > 0;
+                    let isFactionObtainable = equipment.item_sources.filter((e: any) => e.type === 1).length > 0;
+                    let isCadetable = this._cadetableItems.has(equipment.id);
+                    let counts: Map<number, IEquipNeedCount> = new Map();
                     counts.set(eq.crew.id, { crew: eq.crew, count: eq.need });
-                    
+
                     equipment.item_sources.sort((a: any, b: any) => b.energy_quotient - a.energy_quotient);
 
-					mapUnowned.set(eq.archetype, {
+                    mapUnowned.set(eq.archetype, {
                         equipment,
                         cadetSources: this._cadetableItems.get(equipment.id) || [],
-						needed: eq.need,
-						have: have ? have.quantity : 0,
-						counts: counts,
-						isDisputeMissionObtainable: isDisputeMissionObtainable,
-						isShipBattleObtainable: isShipBattleObtainable,
-						isFactionObtainable: isFactionObtainable,
-						isCadetable: isCadetable
-					});
-				}
-			}
-		}
+                        needed: eq.need,
+                        have: have ? have.quantity : 0,
+                        counts: counts,
+                        isDisputeMissionObtainable: isDisputeMissionObtainable,
+                        isShipBattleObtainable: isShipBattleObtainable,
+                        isFactionObtainable: isFactionObtainable,
+                        isCadetable: isCadetable
+                    });
+                }
+            }
+        }
 
-		return mapUnowned;
+        return mapUnowned;
     }
 
     private _getNeededEquipment(filteredCrew: any[], filters: IEquipNeedFilter) {
-		let unparsedEquipment: IUnparsedEquipment[] = [];
-		let mapUnowned: Map<number, IEquipNeed> = new Map();
-		for (let crew of filteredCrew) {
-			let lastEquipmentLevel = 1;
-			crew.equipment_slots.forEach((equipment: any) => {
-				if (!equipment.have) {
-					unparsedEquipment.push({ archetype: equipment.archetype, need: 1, crew: crew });
-				}
+        let unparsedEquipment: IUnparsedEquipment[] = [];
+        let mapUnowned: Map<number, IEquipNeed> = new Map();
+        for (let crew of filteredCrew) {
+            let lastEquipmentLevel = 1;
+            crew.equipment_slots.forEach((equipment: any) => {
+                if (!equipment.have) {
+                    unparsedEquipment.push({ archetype: equipment.archetype, need: 1, crew: crew });
+                }
 
-				lastEquipmentLevel = equipment.level;
-			});
+                lastEquipmentLevel = equipment.level;
+            });
 
-			if (filters.allLevels) {
-				let feCrew = STTApi.allcrew.find(c => c.symbol === crew.symbol);
-				if (feCrew) {
-					let unparsedEquipmentFE: IUnparsedEquipment[] = [];
-					feCrew.equipment_slots.forEach((equipment: any) => {
-						if (equipment.level > lastEquipmentLevel) {
-							unparsedEquipmentFE.push({ archetype: equipment.archetype, need: 1, crew: crew });
-						}
-					});
+            if (filters.allLevels) {
+                let feCrew = STTApi.allcrew.find(c => c.symbol === crew.symbol);
+                if (feCrew) {
+                    let unparsedEquipmentFE: IUnparsedEquipment[] = [];
+                    feCrew.equipment_slots.forEach((equipment: any) => {
+                        if (equipment.level > lastEquipmentLevel) {
+                            unparsedEquipmentFE.push({ archetype: equipment.archetype, need: 1, crew: crew });
+                        }
+                    });
 
-					mapUnowned = this._mergeMapUnowned(mapUnowned, this._calculateNeeds(unparsedEquipmentFE, STTApi.itemArchetypeCache.archetypes));
-				}
-			}
-		}
+                    mapUnowned = this._mergeMapUnowned(mapUnowned, this._calculateNeeds(unparsedEquipmentFE, STTApi.itemArchetypeCache.archetypes));
+                }
+            }
+        }
 
-		mapUnowned = this._mergeMapUnowned(mapUnowned, this._calculateNeeds(unparsedEquipment, STTApi.itemArchetypeCache.archetypes));
+        mapUnowned = this._mergeMapUnowned(mapUnowned, this._calculateNeeds(unparsedEquipment, STTApi.itemArchetypeCache.archetypes));
 
-		// Sort the map by "needed" descending
-		let arr = Array.from(mapUnowned.values());
-		arr.sort((a, b) => b.needed - a.needed);
+        // Sort the map by "needed" descending
+        let arr = Array.from(mapUnowned.values());
+        arr.sort((a, b) => b.needed - a.needed);
 
-		if (filters.onlyNeeded) {
-			arr = arr.filter((entry: IEquipNeed) => entry.have < entry.needed);
-		}
+        if (filters.onlyNeeded) {
+            arr = arr.filter((entry: IEquipNeed) => entry.have < entry.needed);
+        }
 
-		if (filters.onlyFaction) {
-			arr = arr.filter((entry: IEquipNeed) => !entry.isDisputeMissionObtainable && !entry.isShipBattleObtainable && entry.isFactionObtainable);
-		}
+        if (filters.onlyFaction) {
+            arr = arr.filter((entry: IEquipNeed) => !entry.isDisputeMissionObtainable && !entry.isShipBattleObtainable && entry.isFactionObtainable);
+        }
 
-		if (filters.cadetable) {
-			arr = arr.filter((entry: IEquipNeed) => entry.isCadetable);
-		}
+        if (filters.cadetable) {
+            arr = arr.filter((entry: IEquipNeed) => entry.isCadetable);
+        }
 
-		if (filters.userText && filters.userText.trim().length > 0) {
-			let filterString = filters.userText.toLowerCase();
+        if (filters.userText && filters.userText.trim().length > 0) {
+            let filterString = filters.userText.toLowerCase();
 
-			arr = arr.filter((entry: IEquipNeed) => {
-				// if value is (parsed into) a number, filter by entry.equipment.rarity, entry.needed, entry.have, entry.counts{}.count
-				let filterInt = parseInt(filterString);
-				if (!isNaN(filterInt)) {
-					if (entry.equipment.rarity === filterInt) {
-						return true;
-					}
-					if (entry.needed === filterInt) {
-						return true;
-					}
-					if (entry.have === filterInt) {
-						return true;
-					}
-					if (Array.from(entry.counts.values()).some((c: IEquipNeedCount) => c.count === filterInt)) {
-						return true;
-					}
-					return false;
-				}
+            arr = arr.filter((entry: IEquipNeed) => {
+                // if value is (parsed into) a number, filter by entry.equipment.rarity, entry.needed, entry.have, entry.counts{}.count
+                let filterInt = parseInt(filterString);
+                if (!isNaN(filterInt)) {
+                    if (entry.equipment.rarity === filterInt) {
+                        return true;
+                    }
+                    if (entry.needed === filterInt) {
+                        return true;
+                    }
+                    if (entry.have === filterInt) {
+                        return true;
+                    }
+                    if (Array.from(entry.counts.values()).some((c: IEquipNeedCount) => c.count === filterInt)) {
+                        return true;
+                    }
+                    return false;
+                }
 
-				// if string, filter by entry.equipment.name, entry.counts{}.crew.name, entry.equipment.item_sources[].name, cadetableItems{}.name
-				if (entry.equipment.name.toLowerCase().includes(filterString)) {
-					return true;
-				}
-				if (Array.from(entry.counts.values()).some((c: IEquipNeedCount) => c.crew.name.toLowerCase().includes(filterString))) {
-					return true;
-				}
-				if (entry.equipment.item_sources.some((s: any) => s.name.toLowerCase().includes(filterString))) {
-					return true;
-				}
-				if (this._cadetableItems.has(entry.equipment.id)) {
-					if (this._cadetableItems.get(entry.equipment.id)!.some((c: any) => c.name.toLowerCase().includes(filterString))) {
-						return true;
-					}
-				}
+                // if string, filter by entry.equipment.name, entry.counts{}.crew.name, entry.equipment.item_sources[].name, cadetableItems{}.name
+                if (entry.equipment.name.toLowerCase().includes(filterString)) {
+                    return true;
+                }
+                if (Array.from(entry.counts.values()).some((c: IEquipNeedCount) => c.crew.name.toLowerCase().includes(filterString))) {
+                    return true;
+                }
+                if (entry.equipment.item_sources.some((s: any) => s.name.toLowerCase().includes(filterString))) {
+                    return true;
+                }
+                if (this._cadetableItems.has(entry.equipment.id)) {
+                    if (this._cadetableItems.get(entry.equipment.id)!.some((c: any) =>
+                        c.quest.name.toLowerCase().includes(filterString) || c.mission.episode_title.toLowerCase().includes(filterString))) {
+                        return true;
+                    }
+                }
 
-				return false;
-			});
-		}
+                return false;
+            });
+        }
 
-		return arr;
-	}
+        return arr;
+    }
 }
