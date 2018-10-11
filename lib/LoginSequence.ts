@@ -231,8 +231,14 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     onProgress('Loading crew cache...');
 
-    let allcrew = await STTApi.networkHelper.get(STTApi.serverAddress + 'allcrew.json', undefined);
-    STTApi.allcrew = formatAllCrew(allcrew);
+    try {
+        let allcrew = await STTApi.networkHelper.get(STTApi.serverAddress + 'allcrew.json', undefined);
+        STTApi.allcrew = formatAllCrew(allcrew);
+    }
+    catch (e) {
+        console.error(e);
+        STTApi.allcrew = [];
+    }
 
     // Also load the avatars for crew not in the roster
     for (let crew of STTApi.allcrew) {
