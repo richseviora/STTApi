@@ -256,7 +256,14 @@ export class NeededEquipmentClass {
     private _calculateNeeds(unparsedEquipment: IUnparsedEquipment[], archetypes: any[]) {
         let mapUnowned: Map<number, IEquipNeed> = new Map();
         let mapIncompleteUsed: Map<number, IEquipNeed> = new Map();
+        // TODO: infinite loop detection, for bad data
+
+        let loopCount = 0;
         while (unparsedEquipment.length > 0) {
+            if (loopCount++ > 10000) {
+                break;
+            }
+
             let eq = unparsedEquipment.pop()!;
             let equipment = archetypes.find(e => e.id === eq.archetype);
 
