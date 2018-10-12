@@ -4,7 +4,7 @@ import { matchCrew, formatAllCrew } from './CrewTools';
 import { matchShips } from './ShipTools';
 import { IFoundResult } from './ImageProvider';
 import { loadMissionData } from './MissionTools';
-import { loadFullTree } from './EquipmentTools';
+import { loadFullTree, fixupAllCrewIds } from './EquipmentTools';
 import { calculateMissionCrewSuccess, calculateMinimalComplementAsync } from './MissionCrewSuccess';
 
 export async function loginSequence(onProgress: (description: string) => void, loadMissions: boolean = true) {
@@ -258,9 +258,11 @@ export async function loginSequence(onProgress: (description: string) => void, l
         }
     }
 
-    if (!STTApi.inWebMode) {
-        onProgress('Loading equipment...');
-
+    onProgress('Loading equipment...');
+    if (STTApi.inWebMode) {
+        // In web mode we already augmented the itemarchetypes with whatever we had cached, just try to fix stuff up here
+        fixupAllCrewIds();
+    } else {
         await loadFullTree(onProgress);
     }
 

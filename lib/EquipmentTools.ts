@@ -1,5 +1,23 @@
 import STTApi from "./index";
 
+export function fixupAllCrewIds() {
+    // Now replace the ids with proper ones
+    STTApi.allcrew.forEach((crew: any) => {
+        crew.equipment_slots.forEach((es: any) => {
+            let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === es.symbol);
+            if (a) {
+                //console.log(`For ${crew.name} at level ${es.level} updating ${es.symbol} from ${es.archetype} to ${a.id}`);
+                es.archetype = a.id;
+            } else {
+                console.warn(`Something went wrong looking for equipment '${es.symbol}'`);
+                es.archetype = 0;
+            }
+        });
+
+        crew.archetypes = [];
+    });
+}
+
 export async function loadFullTree(onProgress: (description: string) => void): Promise<void> {
     let mapEquipment: Set<number> = new Set();
     let missingEquipment: any[] = [];
@@ -50,21 +68,7 @@ export async function loadFullTree(onProgress: (description: string) => void): P
         }
     }
 
-    // Now replace the ids with proper ones
-    STTApi.allcrew.forEach((crew: any) => {
-        crew.equipment_slots.forEach((es: any) => {
-            let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === es.symbol);
-            if (a) {
-                //console.log(`For ${crew.name} at level ${es.level} updating ${es.symbol} from ${es.archetype} to ${a.id}`);
-                es.archetype = a.id;
-            } else {
-                console.warn(`Something went wrong looking for equipment '${es.symbol}'`);
-                es.archetype = 0;
-            }
-        });
-
-        crew.archetypes = [];
-    });
+    fixupAllCrewIds();
 
     // Search for all equipment in the recipe tree
     STTApi.itemArchetypeCache.archetypes.forEach((equipment: any) => {
