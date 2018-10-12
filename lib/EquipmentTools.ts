@@ -4,7 +4,8 @@ export function fixupAllCrewIds() {
     // Now replace the ids with proper ones
     STTApi.allcrew.forEach((crew: any) => {
         crew.equipment_slots.forEach((es: any) => {
-            let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === es.symbol);
+            let acached = crew.archetypes.find((a: any) => a.id === es.archetype);
+            let a = STTApi.itemArchetypeCache.archetypes.find((a: any) => a.symbol === acached.symbol);
             if (a) {
                 //console.log(`For ${crew.name} at level ${es.level} updating ${es.symbol} from ${es.archetype} to ${a.id}`);
                 es.archetype = a.id;
