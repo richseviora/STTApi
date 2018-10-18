@@ -263,8 +263,13 @@ export async function loginSequence(onProgress: (description: string) => void, l
         // In web mode we already augmented the itemarchetypes with whatever we had cached, just try to fix stuff up here
         fixupAllCrewIds();
     } else {
-        await loadFullTree(onProgress);
+        await loadFullTree(onProgress, false);
     }
+
+    // We no longer need to keep these around
+    STTApi.allcrew.forEach((crew: any) => {
+        crew.archetypes = [];
+    });
 
     onProgress('Caching images...');
 
