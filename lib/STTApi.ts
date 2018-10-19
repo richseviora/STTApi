@@ -452,9 +452,9 @@ export class STTApiClass {
 		}
 
 		for (let skill in crew.base_skills) {
-			crew.skills[skill].core = Math.floor(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
-			crew.skills[skill].range_min = Math.floor(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
-			crew.skills[skill].range_max = Math.floor(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
+			crew.skills[skill].core = Math.round(crew.base_skills[skill].core * getMultiplier(skill, 'core'));
+			crew.skills[skill].range_min = Math.round(crew.base_skills[skill].range_min * getMultiplier(skill, 'range_min'));
+			crew.skills[skill].range_max = Math.round(crew.base_skills[skill].range_max * getMultiplier(skill, 'range_max'));
 		}
 	}
 
