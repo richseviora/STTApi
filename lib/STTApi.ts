@@ -255,6 +255,16 @@ export class STTApiClass {
 			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs));
 	}
 
+	async executeGetRequestWithUpdates(resourceUrl: string, qs: any = {}): Promise<any> {
+		if (this._accessToken === undefined) {
+			throw new Error("Not logged in!");
+		}
+
+		return this._net.get_proxy(CONFIG.URL_SERVER + resourceUrl,
+			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs)).then((data: any) =>
+			this.applyUpdates(data));
+	}
+
 	async executePostRequest(resourceUrl: string, qs: any): Promise<any> {
 		if (this._accessToken === undefined) {
 			throw new Error("Not logged in!");
@@ -420,7 +430,7 @@ export class STTApiClass {
 		} else {
 			if (!data.action) {
 				console.log(`Not sure what message this is; should we be updating something: '${data}'`);
-				return [];
+				return [data];
 			}
 
 			if (data.action === 'update') {
