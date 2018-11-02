@@ -49,7 +49,7 @@ export class STTApiClass {
 	public missions: any;
 	public missionSuccess!: IChallengeSuccess[];
 	public minimalComplement?: MinimalComplement;
-	public imageProvider! : ImageProvider;
+	public imageProvider!: ImageProvider;
 	public inWebMode: boolean;
 	public allcrew!: any[];
 
@@ -121,16 +121,16 @@ export class STTApiClass {
 	get quests(): Dexie.Table<QuestsTable, number> {
 		return this._cache.quests;
 	}
-	
+
 	get equipmentCache(): Dexie.Table<EquipmentTable, string> {
 		return this._cache.equipment;
-    }
-    
-    get immortals(): Dexie.Table<ImmortalsTable, string> {
+	}
+
+	get immortals(): Dexie.Table<ImmortalsTable, string> {
 		return this._cache.immortals;
-    }
-    
-    get wikiImages(): Dexie.Table<WikiImageTable, string> {
+	}
+
+	get wikiImages(): Dexie.Table<WikiImageTable, string> {
 		return this._cache.wikiImages;
 	}
 
@@ -252,7 +252,7 @@ export class STTApiClass {
 		}
 
 		return this._net.get_proxy(CONFIG.URL_SERVER + resourceUrl,
-			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs));
+			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken }, qs));
 	}
 
 	async executeGetRequestWithUpdates(resourceUrl: string, qs: any = {}): Promise<any> {
@@ -261,8 +261,8 @@ export class STTApiClass {
 		}
 
 		return this._net.get_proxy(CONFIG.URL_SERVER + resourceUrl,
-			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken}, qs)).then((data: any) =>
-			this.applyUpdates(data));
+			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION, access_token: this._accessToken }, qs)).then((data: any) =>
+				this.applyUpdates(data));
 	}
 
 	async executePostRequest(resourceUrl: string, qs: any): Promise<any> {
@@ -276,12 +276,22 @@ export class STTApiClass {
 		);
 	}
 
+	async executePostRequestWithUpdates(resourceUrl: string, qs: any = {}): Promise<any> {
+		if (this._accessToken === undefined) {
+			throw new Error("Not logged in!");
+		}
+
+		return this._net.post_proxy(CONFIG.URL_SERVER + resourceUrl,
+			Object.assign({ client_api: CONFIG.CLIENT_API_VERSION }, qs),
+			this._accessToken).then((data: any) => this.applyUpdates(data));
+	}
+
 	async loadServerConfig(): Promise<any> {
 		let data = await this.executeGetRequest("config", {
-			platform:'WebGLPlayer',
-			device_type:'Desktop',
-			client_version:CONFIG.CLIENT_VERSION,
-			platform_folder:CONFIG.CLIENT_PLATFORM
+			platform: 'WebGLPlayer',
+			device_type: 'Desktop',
+			client_version: CONFIG.CLIENT_VERSION,
+			platform_folder: CONFIG.CLIENT_PLATFORM
 		});
 
 		this.serverConfig = data;
@@ -421,7 +431,7 @@ export class STTApiClass {
 
 		if (Array.isArray(data)) {
 			let ephemerals: any[] = [];
-			for(let val of data) {
+			for (let val of data) {
 				let e = await this.applyUpdates(val);
 				ephemerals = ephemerals.concat(e);
 			}
