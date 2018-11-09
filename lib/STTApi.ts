@@ -53,7 +53,6 @@ export class STTApiClass {
 	public inWebMode: boolean;
 	public allcrew!: any[];
 
-	// TODO: make this configurable, if someone wants to host the web app themselves
 	public serverAddress: string = 'https://iampicard.com/';
 
 	constructor() {
@@ -72,6 +71,8 @@ export class STTApiClass {
 		this.inWebMode = webMode;
 
 		if (this.inWebMode) {
+			// In web mode, we don't hardcode the server, but simply load from the domain root
+			this.serverAddress = '/';
 			this._net.setProxy(this.serverAddress + 'proxy');
 		}
 	}
