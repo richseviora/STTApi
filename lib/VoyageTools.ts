@@ -124,7 +124,6 @@ export function bestVoyageShip(): any[] {
     });
 
     consideredShips = consideredShips.sort((a, b) => b.score - a.score);
-    consideredShips = consideredShips.filter(entry => entry.score == consideredShips[0].score);
 
     return consideredShips;
 }
