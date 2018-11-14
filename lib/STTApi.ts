@@ -67,12 +67,15 @@ export class STTApiClass {
 		this._buffConfig = {};
 	}
 
-	setWebMode(webMode: boolean) {
+	setWebMode(webMode: boolean, keepServerAddress: boolean) {
 		this.inWebMode = webMode;
 
 		if (this.inWebMode) {
 			// In web mode, we don't hardcode the server, but simply load from the domain root
-			this.serverAddress = '/';
+			if (!keepServerAddress) {
+				this.serverAddress = '/';
+			}
+
 			this._net.setProxy(this.serverAddress + 'proxy');
 		}
 	}
