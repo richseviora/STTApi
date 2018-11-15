@@ -5,6 +5,7 @@ import { matchShips } from './ShipTools';
 import { IFoundResult } from './ImageProvider';
 import { loadMissionData } from './MissionTools';
 import { loadFullTree, fixupAllCrewIds } from './EquipmentTools';
+import { refreshAllFactions, loadFactionStore } from './FactionTools';
 import { calculateMissionCrewSuccess, calculateMinimalComplementAsync } from './MissionCrewSuccess';
 
 export async function loginSequence(onProgress: (description: string) => void, loadMissions: boolean = true) {
@@ -201,6 +202,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
 
     //await Promise.all(iconPromises);
 
+    await refreshAllFactions();
+
     onProgress('Caching faction images...');
 
     total += STTApi.playerData.character.factions.length;
@@ -223,6 +226,8 @@ export async function loginSequence(onProgress: (description: string) => void, l
             // If we leave this in, stupid React will re-render everything, even though we're in a tight synchronous loop and no one gets to see the updated value anyway
             //onProgress('Caching faction images... (' + current++ + '/' + total + ')');
         }
+
+        iconPromises.push(loadFactionStore(faction));
     }
 
     onProgress('Caching faction images... (' + current + '/' + total + ')');
