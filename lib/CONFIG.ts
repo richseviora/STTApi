@@ -9,21 +9,21 @@ export interface Mastery {
 }
 
 function rgbToHex(r: number, g: number, b: number): string {
-	return "#" + ((b | g << 8 | r << 16) / 0x1000000).toString(16).substring(2);
+	return '#' + ((b | (g << 8) | (r << 16)) / 0x1000000).toString(16).substring(2);
 }
 
 export default class CONFIG {
-	static readonly URL_PLATFORM: string = "https://thorium.disruptorbeam.com/";
-	static readonly URL_SERVER: string = "https://stt.disruptorbeam.com/";
+	static readonly URL_PLATFORM: string = 'https://thorium.disruptorbeam.com/';
+	static readonly URL_SERVER: string = 'https://stt.disruptorbeam.com/';
 
 	// default client_id of the Steam Windows version of STT
-	static readonly CLIENT_ID: string = "4fc852d7-d602-476a-a292-d243022a475d";
+	static readonly CLIENT_ID: string = '4fc852d7-d602-476a-a292-d243022a475d';
 	static readonly CLIENT_API_VERSION: number = 12;
-	static readonly CLIENT_VERSION: string = "6.1.0";
-	static readonly CLIENT_PLATFORM: string = "webgl";
+	static readonly CLIENT_VERSION: string = '6.1.0';
+	static readonly CLIENT_PLATFORM: string = 'webgl';
 
 	// releases URL
-	static readonly URL_GITHUBRELEASES: string = "https://api.github.com/repos/IAmPicard/StarTrekTimelinesSpreadsheet/releases";
+	static readonly URL_GITHUBRELEASES: string = 'https://api.github.com/repos/IAmPicard/StarTrekTimelinesSpreadsheet/releases';
 
 	// Every 10 days, check the wiki again for updated / new images
 	static readonly HOURS_TO_RECOVERY: number = 24 * 10;
@@ -44,21 +44,21 @@ export default class CONFIG {
 	];
 
 	static readonly SKILLS: { [index: string]: string } = {
-		'command_skill': 'Command',
-		'science_skill': 'Science',
-		'security_skill': 'Security',
-		'engineering_skill': 'Engineering',
-		'diplomacy_skill': 'Diplomacy',
-		'medicine_skill': 'Medicine'
+		command_skill: 'Command',
+		science_skill: 'Science',
+		security_skill: 'Security',
+		engineering_skill: 'Engineering',
+		diplomacy_skill: 'Diplomacy',
+		medicine_skill: 'Medicine'
 	};
 
 	static readonly SKILLS_SHORT: { [index: string]: string } = {
-		'command_skill': 'CMD',
-		'science_skill': 'SCI',
-		'security_skill': 'SEC',
-		'engineering_skill': 'ENG',
-		'diplomacy_skill': 'DIP',
-		'medicine_skill': 'MED'
+		command_skill: 'CMD',
+		science_skill: 'SCI',
+		security_skill: 'SEC',
+		engineering_skill: 'ENG',
+		diplomacy_skill: 'DIP',
+		medicine_skill: 'MED'
 	};
 
 	static readonly CREW_SHIP_BATTLE_BONUS_TYPE: { [index: number]: string } = {
@@ -119,93 +119,108 @@ export default class CONFIG {
 		10: 'Bundle',
 		11: 'Event',
 		12: 'Stimpack grant',
-		13: 'Useful loot'  // ?
+		13: 'Useful loot' // ?
 	};
 
-	static SPRITES: { [index: string]: { asset: string, url: string|undefined } } = {
-		'mastery_highest_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'mastery_medium_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'mastery_lowest_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'star_reward': { asset: 'atlas_stt_icons', url: undefined },
-		'star_reward_inactive': { asset: 'atlas_stt_icons', url: undefined },
-		'fleet_rank_admiral_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'fleet_rank_captain_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'fleet_rank_ensign_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'fleet_rank_lt_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'honor_currency': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_command_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_diplomacy_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_engineering_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_medicine_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_science_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_security_skill': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_shuttle_lg': { asset: 'atlas_stt_icons', url: undefined },
-		'node_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'pe_currency_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'pp_currency_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'soft_currency_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'victory_point_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'energy_icon': { asset: 'atlas_stt_icons', url: undefined }, // chronitons
-		'cadet_icon': { asset: 'atlas_stt_icons', url: undefined }, // cadet
-		'images_currency_honor_currency_0': { asset: '', url: undefined }, // honor
-		'images_currency_pe_currency_0': { asset: '', url: undefined }, // merits
-		'images_currency_pp_currency_0': { asset: '', url: undefined }, // dilithium
-		'images_currency_sc_currency_0': { asset: '', url: undefined }, // credits
-		'wrench_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'crew_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'trashcan_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'item_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'collection_blue_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'transmission_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'fusion_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'mission_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'equipment_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'trait_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'faction_store_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'freeze_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'friends_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'fleet_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'buyback_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'change_ship_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'collection_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'unlock_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'system_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'event_attn_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'response_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'info_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'merits_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'event_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'options_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'dilemma_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'warning_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'galaxy_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'get_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'proficency_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'conflictmarker_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'exclamation_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'captain_xp_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'starfleet_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'menu_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'dilithium_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'icon_antimatter': { asset: 'atlas_stt_icons', url: undefined },
-		'complete_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'q_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'news_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'anomally_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'trophy_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'question_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'event_expedition_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'restricted_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'shuttle_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'ship_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'search_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'scanning_icon': { asset: 'atlas_stt_icons', url: undefined },
-		'sb_hull_repair': { asset: 'atlas_stt_icons', url: undefined },
-		'images_collection_vault_vault_item_bg_immortalized_256': { asset: '', url: undefined },
-		'images_collection_vault_vault_item_bg_popup': { asset: '', url: undefined },
-		'images_icons_dilemma_icon': { asset: '', url: undefined },
-		'images_voyages_voyage_bg': { asset: '', url: undefined },
-		'images_voyages_scanlines': { asset: '', url: undefined },
-		'images_ship_battles_pvp_battle_img': { asset: '', url: undefined }
+	static readonly CURRENCIES = {
+		premium_earnable: {
+			name: 'merits',
+			icon: 'images_currency_pe_currency_0'
+		},
+		premium_purchasable: {
+			name: 'dilithium',
+			icon: 'images_currency_pp_currency_0'
+		},
+		nonpremium: {
+			name: 'credits',
+			icon: 'images_currency_sc_currency_0'
+		}
+	};
+
+	static SPRITES: { [index: string]: { asset: string; url: string | undefined } } = {
+		mastery_highest_icon: { asset: 'atlas_stt_icons', url: undefined },
+		mastery_medium_icon: { asset: 'atlas_stt_icons', url: undefined },
+		mastery_lowest_icon: { asset: 'atlas_stt_icons', url: undefined },
+		star_reward: { asset: 'atlas_stt_icons', url: undefined },
+		star_reward_inactive: { asset: 'atlas_stt_icons', url: undefined },
+		fleet_rank_admiral_icon: { asset: 'atlas_stt_icons', url: undefined },
+		fleet_rank_captain_icon: { asset: 'atlas_stt_icons', url: undefined },
+		fleet_rank_ensign_icon: { asset: 'atlas_stt_icons', url: undefined },
+		fleet_rank_lt_icon: { asset: 'atlas_stt_icons', url: undefined },
+		honor_currency: { asset: 'atlas_stt_icons', url: undefined },
+		icon_command_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_diplomacy_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_engineering_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_medicine_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_science_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_security_skill: { asset: 'atlas_stt_icons', url: undefined },
+		icon_shuttle_lg: { asset: 'atlas_stt_icons', url: undefined },
+		node_icon: { asset: 'atlas_stt_icons', url: undefined },
+		pe_currency_icon: { asset: 'atlas_stt_icons', url: undefined },
+		pp_currency_icon: { asset: 'atlas_stt_icons', url: undefined },
+		soft_currency_icon: { asset: 'atlas_stt_icons', url: undefined },
+		victory_point_icon: { asset: 'atlas_stt_icons', url: undefined },
+		energy_icon: { asset: 'atlas_stt_icons', url: undefined }, // chronitons
+		cadet_icon: { asset: 'atlas_stt_icons', url: undefined }, // cadet
+		images_currency_honor_currency_0: { asset: '', url: undefined }, // honor
+		images_currency_pe_currency_0: { asset: '', url: undefined }, // merits
+		images_currency_pp_currency_0: { asset: '', url: undefined }, // dilithium
+		images_currency_sc_currency_0: { asset: '', url: undefined }, // credits
+		wrench_icon: { asset: 'atlas_stt_icons', url: undefined },
+		crew_icon: { asset: 'atlas_stt_icons', url: undefined },
+		trashcan_icon: { asset: 'atlas_stt_icons', url: undefined },
+		item_icon: { asset: 'atlas_stt_icons', url: undefined },
+		collection_blue_icon: { asset: 'atlas_stt_icons', url: undefined },
+		transmission_icon: { asset: 'atlas_stt_icons', url: undefined },
+		fusion_icon: { asset: 'atlas_stt_icons', url: undefined },
+		mission_icon: { asset: 'atlas_stt_icons', url: undefined },
+		equipment_icon: { asset: 'atlas_stt_icons', url: undefined },
+		trait_icon: { asset: 'atlas_stt_icons', url: undefined },
+		faction_store_icon: { asset: 'atlas_stt_icons', url: undefined },
+		freeze_icon: { asset: 'atlas_stt_icons', url: undefined },
+		friends_icon: { asset: 'atlas_stt_icons', url: undefined },
+		fleet_icon: { asset: 'atlas_stt_icons', url: undefined },
+		buyback_icon: { asset: 'atlas_stt_icons', url: undefined },
+		change_ship_icon: { asset: 'atlas_stt_icons', url: undefined },
+		collection_icon: { asset: 'atlas_stt_icons', url: undefined },
+		unlock_icon: { asset: 'atlas_stt_icons', url: undefined },
+		system_icon: { asset: 'atlas_stt_icons', url: undefined },
+		event_attn_icon: { asset: 'atlas_stt_icons', url: undefined },
+		response_icon: { asset: 'atlas_stt_icons', url: undefined },
+		info_icon: { asset: 'atlas_stt_icons', url: undefined },
+		merits_icon: { asset: 'atlas_stt_icons', url: undefined },
+		event_icon: { asset: 'atlas_stt_icons', url: undefined },
+		options_icon: { asset: 'atlas_stt_icons', url: undefined },
+		dilemma_icon: { asset: 'atlas_stt_icons', url: undefined },
+		warning_icon: { asset: 'atlas_stt_icons', url: undefined },
+		galaxy_icon: { asset: 'atlas_stt_icons', url: undefined },
+		get_icon: { asset: 'atlas_stt_icons', url: undefined },
+		proficency_icon: { asset: 'atlas_stt_icons', url: undefined },
+		conflictmarker_icon: { asset: 'atlas_stt_icons', url: undefined },
+		exclamation_icon: { asset: 'atlas_stt_icons', url: undefined },
+		captain_xp_icon: { asset: 'atlas_stt_icons', url: undefined },
+		starfleet_icon: { asset: 'atlas_stt_icons', url: undefined },
+		menu_icon: { asset: 'atlas_stt_icons', url: undefined },
+		dilithium_icon: { asset: 'atlas_stt_icons', url: undefined },
+		icon_antimatter: { asset: 'atlas_stt_icons', url: undefined },
+		complete_icon: { asset: 'atlas_stt_icons', url: undefined },
+		q_icon: { asset: 'atlas_stt_icons', url: undefined },
+		news_icon: { asset: 'atlas_stt_icons', url: undefined },
+		anomally_icon: { asset: 'atlas_stt_icons', url: undefined },
+		trophy_icon: { asset: 'atlas_stt_icons', url: undefined },
+		question_icon: { asset: 'atlas_stt_icons', url: undefined },
+		event_expedition_icon: { asset: 'atlas_stt_icons', url: undefined },
+		restricted_icon: { asset: 'atlas_stt_icons', url: undefined },
+		shuttle_icon: { asset: 'atlas_stt_icons', url: undefined },
+		ship_icon: { asset: 'atlas_stt_icons', url: undefined },
+		search_icon: { asset: 'atlas_stt_icons', url: undefined },
+		scanning_icon: { asset: 'atlas_stt_icons', url: undefined },
+		sb_hull_repair: { asset: 'atlas_stt_icons', url: undefined },
+		images_collection_vault_vault_item_bg_immortalized_256: { asset: '', url: undefined },
+		images_collection_vault_vault_item_bg_popup: { asset: '', url: undefined },
+		images_icons_dilemma_icon: { asset: '', url: undefined },
+		images_voyages_voyage_bg: { asset: '', url: undefined },
+		images_voyages_scanlines: { asset: '', url: undefined },
+		images_ship_battles_pvp_battle_img: { asset: '', url: undefined }
 	};
 }
