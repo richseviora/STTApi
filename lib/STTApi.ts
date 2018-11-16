@@ -482,7 +482,7 @@ export class STTApiClass {
 		}
 	}
 
-	getNeededEquipment(filters: IEquipNeedFilter): IEquipNeed[] {
-		return this._neededEquipment.filterNeededEquipment(filters);
+	getNeededEquipment(filters: IEquipNeedFilter, limitCrew: number[]): IEquipNeed[] {
+		return this._neededEquipment.filterNeededEquipment(filters, limitCrew);
 	}
 }

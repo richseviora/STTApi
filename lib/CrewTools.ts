@@ -119,6 +119,12 @@ export function formatAllCrew(allcrew: any[]) {
 		rosterFromCrew(rosterEntry, crew);
 
 		rosterEntry.archetypes = crew.archetypes;
+
+		let avatar = STTApi.crewAvatars.find((av: any) => av.symbol === crew.symbol);
+		if (avatar) {
+			rosterEntry.id = avatar.id;
+		}
+
 		roster.push(rosterEntry);
 	});
 

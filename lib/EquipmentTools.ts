@@ -164,7 +164,6 @@ export interface IFactionStoreItemSource {
 }
 
 export interface IEquipNeedFilter {
-	onlyFavorite: boolean;
 	onlyNeeded: boolean;
 	onlyFaction: boolean;
 	cadetable: boolean;
@@ -205,12 +204,33 @@ export class NeededEquipmentClass {
 		this._factionableItems = new Map<number, IFactionStoreItemSource[]>();
 	}
 
-	filterNeededEquipment(filters: IEquipNeedFilter): IEquipNeed[] {
+	filterNeededEquipment(filters: IEquipNeedFilter, limitCrew: number[]): IEquipNeed[] {
 		this._getCadetableItems();
 		this._getFactionableItems();
-		const filteredCrew = this._getFilteredCrew(filters);
+		const filteredCrew = this._getFilteredCrew(filters, limitCrew);
 		const neededEquipment = this._getNeededEquipment(filteredCrew, filters);
 		return neededEquipment;
+	}
+
+	private _getFilteredCrew(filters: IEquipNeedFilter, limitCrew: number[]): any[] {
+		if (limitCrew.length === 0) {
+			// filter out `crew.buyback` by default
+			return STTApi.roster.filter((c: any) => !c.buyback);
+		} else {
+			let selectedCrew: any[] = [];
+			limitCrew.forEach((id: any) => {
+				let crew = STTApi.roster.find((c: any) => c.id === id);
+				if (!crew) {
+					crew = STTApi.allcrew.find((c: any) => c.id === id);
+				}
+
+				if (crew) {
+					selectedCrew.push(crew);
+				}
+			});
+
+			return selectedCrew;
+		}
 	}
 
 	private _getFactionableItems() {
@@ -271,17 +291,6 @@ export class NeededEquipmentClass {
 				}
 			}
 		}
-	}
-
-	private _getFilteredCrew(filters: IEquipNeedFilter): any[] {
-		// filter out `crew.buyback` by default
-		let crew = STTApi.roster.filter((c: any) => !c.buyback);
-
-		if (filters.onlyFavorite) {
-			crew = crew.filter((c: any) => c.favorite);
-		}
-
-		return crew;
 	}
 
 	private _mergeMapUnowned(target: Map<number, IEquipNeed>, source: Map<number, IEquipNeed>) {
@@ -435,7 +444,7 @@ export class NeededEquipmentClass {
 				lastEquipmentLevel = equipment.level;
 			});
 
-			if (filters.allLevels) {
+			if (filters.allLevels && !crew.isExternal) {
 				let feCrew = STTApi.allcrew.find(c => c.symbol === crew.symbol);
 				if (feCrew) {
 					let unparsedEquipmentFE: IUnparsedEquipment[] = [];
