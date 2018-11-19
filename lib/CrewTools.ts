@@ -36,8 +36,20 @@ export function calculateBuffConfig(): { [index: string]: IBuffStat } {
 	return buffConfig;
 }
 
+export interface ICrew {
+	level: number;
+	rarity: number;
+	in_buy_back_state: boolean;
+	favorite: boolean;
+	id: number;
+	active_id: number;
+}
+
 function rosterFromCrew(rosterEntry: any, crew: any): void {
+	console.info("Rostering - Crew", Object.assign({}, crew));
+  console.info("Rostering - Roster Entry", Object.assign({}, rosterEntry));
 	rosterEntry.level = crew.level;
+	rosterEntry.max_level = crew.max_level;
 	rosterEntry.rarity = crew.rarity;
 	rosterEntry.buyback = crew.in_buy_back_state;
 	rosterEntry.favorite = crew.favorite;
